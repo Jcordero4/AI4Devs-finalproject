@@ -49,6 +49,7 @@ La solución se basa en el siguiente conjunto de tecnologías:
 ### **1.5 URL del repositorio**
 En esta sección encontrará la URL del repositorio del proyecto, no se cargará el main si no el feature branch que corresponda a la etapa a entregar.
 
+https://github.com/Jcordero4/AI4Devs-finalproject/tree/feature/entrega-1-JJCM
 
 ## 2. Objetivo y alcance.
 
