@@ -44,7 +44,7 @@ La solución se basa en el siguiente conjunto de tecnologías:
 - C# 12 — Lenguaje de programación del lado del servidor
 - Entity Framework Core 8: ORM para acceso y migraciones de bases de datos con tipado seguro.
 - MySQL 8 — Motor de base de datos relacional
-- React JS (Vite) - HTML5 / CSS3 / JavaScript (ES2022) — Interfaz de usuario frontend responsiva.
+- React (Vite) + TypeScript — HTML5 / CSS3 / TypeScript (ES2022) — Interfaz de usuario frontend responsiva.
 
 ### **1.5 URL del repositorio**
 En esta sección encontrará la URL del repositorio del proyecto, no se cargará el main si no el feature branch que corresponda a la etapa a entregar.
@@ -95,7 +95,7 @@ NutriTrack usa una arquitectura limpia de N capas con separación estricta de re
 
 | Capa | Tecnología | Responsabilidad |
 |---|---|---|
-| Presentación | React JS (Vite) — Bootstrap 5.3.8 / HTML5 / CSS3 / ES2022 | Renderiza la UI, gestiona eventos de usuario y consume la API vía `fetch` con `credentials: 'include'`. |
+| Presentación | React + TypeScript (Vite) + react-router-dom — Bootstrap 5.3.8 / HTML5 / CSS3 / ES2022 | Renderiza la UI, gestiona eventos de usuario y consume la API vía `fetch` con `credentials: 'include'`. |
 | API | ASP.NET Core Web API (`net10.0`) | Expone endpoints RESTful, enrutamiento HTTP, middleware de autenticación/CORS/errores y formato de respuesta. |
 | Lógica de negocio | Servicios C# + FluentValidation | Valida entradas, aplica reglas de negocio y coordina las llamadas a la capa de datos. |
 | Acceso a datos | Entity Framework Core 8 (provider Pomelo MySQL) | Mapea entidades a tablas MySQL; consultas LINQ, relaciones y migraciones. |
@@ -109,7 +109,7 @@ NutriTrack usa una arquitectura limpia de N capas con separación estricta de re
 | NutriTrack.Application | `Application/` | Servicios de aplicación, DTOs, interfaces, validadores FluentValidation |
 | NutriTrack.Domain | `Domain/` | Entidades POCO, enums y constantes de negocio — cero referencias a EF Core |
 | NutriTrack.Infrastructure | `Infrastructure/` | `DbContext`, provider Pomelo MySQL, repositorios, migraciones |
-| NutriTrack.Web | `Web/` | Frontend React (Vite): componentes, hooks, servicios de API |
+| NutriTrack.Web | `Web/` | Frontend React + TypeScript (Vite): componentes, hooks, servicios de API |
 | NutriTrack.Tests | `Test/` | xUnit: pruebas unitarias (servicios) e integración (endpoints) |
 
 ### **4.2 Diagrama C4 — Nivel 1: Contexto**
@@ -147,7 +147,7 @@ flowchart TB
     usuario["Nutricionista / Administrador"]
 
     subgraph web["NutriTrack.Web — Navegador"]
-        spa["SPA React + Vite [ES2022]<br/><i>Vistas, graficos de progreso,<br/>formularios validados en cliente</i>"]
+        spa["SPA React + TypeScript + Vite [ES2022]<br/><i>Vistas, graficos de progreso,<br/>formularios validados en cliente</i>"]
     end
 
     subgraph api["NutriTrack.Api — ASP.NET Core net10.0"]
@@ -369,7 +369,7 @@ erDiagram
 - Esta tabla `Plan_Nutricional` (distribución de porciones por grupo alimenticio, ligada a una medición) es un concepto distinto del "Plan nutricional" versionado del Epic 4 (US-011 a US-013: título, objetivo, macros, horario de comidas); ese último no forma parte de este diagrama por no estar cubierto en US-004/008/009.
 - Los nombres de entidades aquí (`Cliente`, `Medicion`, `Tratamiento`, `Plan_Nutricional`) están en español, siguiendo `docs/US-004-CRUD-Cliente.md` y `docs/US-008-Medicion-Composicion-Corporal.md`. Las secciones 4.2 a 4.6 se actualizaron para usar los mismos nombres en español (`Cliente`, `Medicion`, `Plan`, `Usuario`, etc.); `Tratamiento` y `Plan_Nutricional` (sub-bloques de `Medicion`) no aparecen todavía en esos diagramas de contenedores/secuencia porque son anteriores al detalle documentado en US-008 — conviene incorporarlos ahí también más adelante.
 
-> **Nota sobre discrepancias de stack:** estos diagramas siguen el stack declarado en la sección 1.4 de este README (React JS + Vite) y el `TargetFramework` real del proyecto (`API/NutriTrackAPI.csproj` → `net10.0`). El plan `docs/NutriTrack_Project_Plan_ESP.docx` (§6.1 y §9) todavía describe **JavaScript puro sin framework** y **.NET 8 / EF Core 8**. Conviene alinear el documento con el código, o viceversa, antes del Sprint 1.
+> **Nota sobre discrepancias de stack:** estos diagramas siguen el stack declarado en la sección 1.4 de este README (React + TypeScript + Vite) y el `TargetFramework` real del proyecto (`API/NutriTrackAPI.csproj` → `net10.0`). El plan `docs/NutriTrack_Project_Plan_ESP.docx` (§6.1 y §9) todavía describe **JavaScript puro sin framework** (el código usa TypeScript) y **.NET 8 / EF Core 8**. Conviene alinear el documento con el código, o viceversa, antes del Sprint 1.
 
 ## 7. Tickets de Trabajo
 En esta sección se documentarán 3 tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Se da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto.

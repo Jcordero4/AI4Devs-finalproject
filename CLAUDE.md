@@ -1,0 +1,1 @@
+C:/Training/Lidr/AI4Devs-finalproject/AGENTS.md

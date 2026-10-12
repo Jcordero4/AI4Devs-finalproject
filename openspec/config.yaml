@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  Producto: NutriTrack, sistema web de gestión de registros nutricionales.
+  Stack y arquitectura: fuente de verdad en README.md (§1.4, §4).
+  Backend: .NET (target net10.0), N-tier API -> Application -> Domain; Infrastructure -> Application.
+  Domain sin dependencias (cero EF Core). Validación de DTOs con FluentValidation.
+  Datos: EF Core 8 + Pomelo MySQL 8.x, solo consultas parametrizadas, sin SQL crudo.
+  Frontend: React + TypeScript + Vite en Web/; llamadas vía Web/src/services/apiClient.ts.
+  Tests: xUnit en Test/ (integración con Microsoft.AspNetCore.Mvc.Testing).
+  Idioma: código, identificadores, docs, specs y commits en español (Cliente, Medicion, Plan, ...).
+  Ramas: feature/entrega-N-JJCM, PR hacia main.
+  Fuera del MVP: autenticación JWT/roles (README §2.3); no proponerla salvo pedido explícito.
+  Origen de requisitos: docs/PRD.md, docs/backlog-NutriTrack.md, docs/US-*.md, docs/API-Controllers.md.
+  Las specs en openspec/specs/ son el contrato vigente de comportamiento; deben ser coherentes con ellas.
+
+rules:
+  proposal:
+    - Citar la US o sección del PRD de origen en docs/
+    - Incluir sección "Fuera de alcance"
+  specs:
+    - Escribir en español
+    - Escenarios en formato GIVEN/WHEN/THEN
+    - No contradecir specs existentes en openspec/specs/ sin marcarlo como MODIFIED
+  design:
+    - Respetar dependencias de capas N-tier; no introducir EF Core en Domain
+  tasks:
+    - Incluir tarea de tests (xUnit) por cada requisito
+    - Incluir actualizar README.md si cambia stack o estructura

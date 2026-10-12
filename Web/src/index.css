@@ -1,0 +1,285 @@
+/* Tokens de NutriTrack (docs/estandarUI-UX.md §3.1). Hex estimados del mockup. */
+:root {
+  --nt-navy: #0F2A5C;
+  --nt-primary: #1F5FD1;
+  --nt-primary-hover: #1A4FAF;
+  --nt-primary-active: #174590;
+  --nt-accent: #F28C28;
+  --nt-success: #2E9E4F;
+  --nt-danger: #D9534F;
+  --nt-warning: #E0A100;
+  --nt-bg: #F5F7FB;
+  --nt-surface: #FFFFFF;
+  --nt-border: #E3E8F0;
+  --nt-text: #1B2740;
+  --nt-text-muted: #6B7A90;
+  --nt-radius: 0.5rem;
+  --nt-radius-sm: 0.375rem;
+
+  /* Overrides de variables Bootstrap */
+  --bs-primary: var(--nt-primary);
+  --bs-primary-rgb: 31, 95, 209;
+  --bs-success: var(--nt-success);
+  --bs-success-rgb: 46, 158, 79;
+  --bs-danger: var(--nt-danger);
+  --bs-danger-rgb: 217, 83, 79;
+  --bs-warning: var(--nt-warning);
+  --bs-warning-rgb: 224, 161, 0;
+  --bs-body-bg: var(--nt-bg);
+  --bs-body-color: var(--nt-text);
+  --bs-border-color: var(--nt-border);
+  --bs-secondary-color: var(--nt-text-muted);
+  --bs-link-color: var(--nt-primary);
+  --bs-link-color-rgb: 31, 95, 209;
+  --bs-link-hover-color: var(--nt-primary-hover);
+  --bs-border-radius: var(--nt-radius-sm);
+  --bs-focus-ring-color: rgba(31, 95, 209, 0.25);
+}
+
+body {
+  background-color: var(--nt-bg);
+  color: var(--nt-text);
+}
+
+/* Bootstrap 5.3 define .btn-primary con variables --bs-btn-*; se reasignan al azul NutriTrack. */
+.btn-primary {
+  --bs-btn-bg: var(--nt-primary);
+  --bs-btn-border-color: var(--nt-primary);
+  --bs-btn-hover-bg: var(--nt-primary-hover);
+  --bs-btn-hover-border-color: var(--nt-primary-hover);
+  --bs-btn-active-bg: var(--nt-primary-active);
+  --bs-btn-active-border-color: var(--nt-primary-active);
+  --bs-btn-disabled-bg: var(--nt-primary);
+  --bs-btn-disabled-border-color: var(--nt-primary);
+  --bs-btn-focus-shadow-rgb: 31, 95, 209;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--nt-text);
+  --bs-btn-border-color: var(--nt-border);
+  --bs-btn-hover-color: var(--nt-text);
+  --bs-btn-hover-bg: var(--nt-bg);
+  --bs-btn-hover-border-color: var(--nt-text-muted);
+  --bs-btn-active-color: var(--nt-text);
+  --bs-btn-active-bg: var(--nt-border);
+  --bs-btn-active-border-color: var(--nt-text-muted);
+}
+
+/* Tarjetas: superficie blanca, borde fino, sombra mínima */
+.card {
+  --bs-card-bg: var(--nt-surface);
+  --bs-card-border-color: var(--nt-border);
+  --bs-card-border-radius: var(--nt-radius);
+  --bs-card-cap-bg: var(--nt-surface);
+  box-shadow: 0 1px 2px rgba(15, 42, 92, 0.05);
+}
+
+.card-header {
+  font-weight: 600;
+}
+
+/* Inputs */
+.form-control,
+.form-select {
+  border-color: var(--nt-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--nt-primary);
+  box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+
+/* Layout de aplicación (docs/estandarUI-UX.md §4) */
+.nt-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 240px;
+  z-index: 1045;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.75rem;
+  background-color: var(--nt-navy);
+  color: var(--nt-surface);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.2s ease, visibility 0.2s;
+}
+
+.nt-sidebar--abierto {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.nt-sidebar__marca {
+  padding: 0.5rem 0.75rem 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.nt-sidebar__nav {
+  flex: 1 1 auto;
+}
+
+.nt-nav-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nt-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: var(--nt-radius);
+  background: transparent;
+  color: color-mix(in srgb, var(--nt-surface) 85%, transparent);
+  font-size: 1rem;
+  text-align: left;
+  text-decoration: none;
+}
+
+.nt-nav-item:hover {
+  background-color: color-mix(in srgb, var(--nt-surface) 10%, transparent);
+  color: var(--nt-surface);
+}
+
+.nt-nav-item:focus-visible {
+  outline: 2px solid var(--nt-surface);
+  outline-offset: 2px;
+}
+
+.nt-nav-item.active {
+  background-color: var(--nt-primary);
+  color: var(--nt-surface);
+  font-weight: 600;
+}
+
+.nt-nav-item--deshabilitado:disabled {
+  color: color-mix(in srgb, var(--nt-surface) 60%, transparent);
+  cursor: not-allowed;
+}
+
+.nt-nav-item--deshabilitado:disabled:hover {
+  background: transparent;
+}
+
+.nt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background-color: color-mix(in srgb, var(--nt-navy) 50%, transparent);
+}
+
+.nt-main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nt-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--nt-surface);
+  border-bottom: 1px solid var(--nt-border);
+}
+
+.nt-topbar__buscador {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+.nt-topbar__buscador .form-control {
+  padding-left: 2.25rem;
+  border-radius: 999px;
+  background-color: var(--nt-bg);
+}
+
+.nt-topbar__lupa {
+  position: absolute;
+  top: 50%;
+  left: 0.8rem;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.nt-topbar__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  color: var(--nt-text);
+}
+
+.nt-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--nt-primary);
+  color: var(--nt-surface);
+  font-weight: 600;
+}
+
+.nt-contenido {
+  flex: 1 1 auto;
+  padding: 1.5rem 1rem;
+  background-color: var(--nt-bg);
+}
+
+.nt-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.nt-encabezado__subtitulo {
+  margin: 0.25rem 0 0;
+  color: var(--nt-text-muted);
+}
+
+.nt-fila-seleccionable {
+  cursor: pointer;
+}
+
+@media (min-width: 992px) {
+  .nt-sidebar {
+    transform: none;
+    visibility: visible;
+    z-index: 1030;
+  }
+
+  .nt-main {
+    margin-left: 240px;
+  }
+
+  .nt-contenido {
+    padding: 1.5rem 2rem;
+  }
+
+  .nt-backdrop {
+    display: none;
+  }
+}
+
+/* Marca de campo obligatorio */
+.campo-obligatorio {
+  color: var(--nt-danger);
+  margin-left: 0.15rem;
+}

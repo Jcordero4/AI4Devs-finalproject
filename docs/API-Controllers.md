@@ -4,6 +4,10 @@
 >
 > Nota de archivo: el nombre solicitado tenía una errata ("API-Controlles"); se creó como `API-Controllers.md`.
 
+## Nota
+> El proyecto del API cuenta con el swagger instalado para facilitar la visualizacion de los endpoints y como estos funcionan, permitiendo la ejecución de cada endpoint desde el swagger.
+> Modo de acceso: ejecuta el proyecto de API y en el url escribe: https://localhost:7054/swagger/index.html
+
 ## Alcance MVP
 
 Según `README.md` §2.2–§2.3:

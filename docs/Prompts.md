@@ -41,3 +41,10 @@ creame el diagrama entidad relacion y adjuntalo en el archivo de Readme.md en la
 
 ### Creación de URL de los Controllers del API.
 Basandose en el archivo @docs/PRD.md y en los archivos en docs\ US-004, US-008 y US-009, creame un nuevo archivo "docs\API-Controlles.md" donde se muestren para el API los nombres de los Controlles las rutas de estos y el método.
+
+### Openspec
+Antes de que instalara el Openspec ya habia creado el archivo Claude.md, que lo cree con el comando init, luego manualmente le hice ajustes en especial para la fuente de verdad. Luego apliqué un cambio para que se utilizara el archivo Agents.md como estandar, para esto cree el archivo y le copie todo lo del archivo Claude.md, eliminé el archivo Claude.md y cree un link llamado Claude.md que hace referencia al Agents.md, esto para que si el proyecto se ejecuta en otra IA pueda leer el contexto sin problema.
+Luego de esto realizé la instalacion del Openspec y le solicité con la misma IA (claude code) que me indicara como hacer para que el "spec" tambien fuera fuente de verdad y la IA me ayudó a hacer los ajustes del Agents.md y del config.yaml de configuración del Openspec.
+
+### Creacion subagente para frontEnd
+Ayudame a crear un agente de implementación y mejora de la UI/UX donde actue como un experto en FrontEnd Engineer especializado en React JS, Typescript y UI/UX moderno con las mejores practicas. El rol debe ser ayudarme a mejorar, implementar componentes UI manteniendo un codigo limpio y accesible y con buen rendimiento, utilizando CSS, HTML y el framework Bootstrap 5.3.8. El agente debe ejecutarse de forma automática cuando en un requerimiento se esté necesitando implementar, desarrollar UI/UX y ejecutarse tambien manualmente solicitando la mejora o estandarización de un componente ya implementado que no cumple con el estandar de UI/UX ya implementado. Además crea en la carpeta docs un archivo llamado estandarUI-UX.md en el cual el agente escribirá cuales fueron las desiciones de diseño, patrones, aquello que ayude al agente a recordar o tener memoria de como implementar para el proyecto. El agente se llamará frontend-designer.

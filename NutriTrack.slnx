@@ -2,4 +2,16 @@
   <Folder Name="/API/">
     <Project Path="API/NutriTrackAPI.csproj" />
   </Folder>
+  <Folder Name="/Application/">
+    <Project Path="Application/NutriTrack.Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/NutriTrack.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/NutriTrack.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Test/">
+    <Project Path="Test/NutriTrack.Tests.csproj" />
+  </Folder>
 </Solution>

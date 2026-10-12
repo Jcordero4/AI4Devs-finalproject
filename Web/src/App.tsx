@@ -1,0 +1,21 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import FormularioCliente from './components/FormularioCliente'
+import LayoutApp from './components/LayoutApp'
+import ListadoClientes from './components/ListadoClientes'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<LayoutApp />}>
+          <Route path="/clientes" element={<ListadoClientes />} />
+          <Route path="/clientes/nuevo" element={<FormularioCliente />} />
+          <Route path="/clientes/:id/editar" element={<FormularioCliente />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/clientes" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
