@@ -41,6 +41,6 @@ public class ManejoErroresMiddleware(RequestDelegate siguiente, ILogger<ManejoEr
     private static Task Responder(HttpContext contexto, ProblemDetails problema)
     {
         contexto.Response.StatusCode = problema.Status!.Value;
-        return contexto.Response.WriteAsJsonAsync(problema, (System.Text.Json.JsonSerializerOptions?)null, "application/problem+json");
+        return contexto.Response.WriteAsJsonAsync(problema, problema.GetType(), (System.Text.Json.JsonSerializerOptions?)null, "application/problem+json");
     }
 }

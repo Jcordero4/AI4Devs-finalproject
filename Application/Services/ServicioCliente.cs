@@ -18,7 +18,7 @@ public class ServicioCliente(
     {
         pagina = Math.Max(pagina, 1);
         var (items, total) = await repositorio.ListarAsync(nombre?.Trim(), id?.Trim(), pagina, TamanoPagina, ct);
-        var dtos = items.Select(c => new ClienteListadoDto(c.Id, c.Nombre, c.Email, c.Activo)).ToList();
+        var dtos = items.Select(c => new ClienteListadoDto(c.Id, c.Nombre, c.Telefono, c.Email, c.Activo)).ToList();
         return new ResultadoPaginadoDto<ClienteListadoDto>(dtos, pagina, TamanoPagina, total);
     }
 
@@ -46,7 +46,8 @@ public class ServicioCliente(
             FechaNacimiento = dto.FechaNacimiento!.Value,
             Genero = Enum.Parse<Genero>(dto.Genero!),
             Altura = dto.Altura!.Value,
-            Email = LimpiarEmail(dto.Email),
+            Telefono = LimpiarTexto(dto.Telefono),
+            Email = LimpiarTexto(dto.Email),
             FechaIngreso = DateOnly.FromDateTime(DateTime.Today),
             Activo = true
         };
@@ -66,15 +67,16 @@ public class ServicioCliente(
         cliente.FechaNacimiento = dto.FechaNacimiento!.Value;
         cliente.Genero = Enum.Parse<Genero>(dto.Genero!);
         cliente.Altura = dto.Altura!.Value;
-        cliente.Email = LimpiarEmail(dto.Email);
+        cliente.Telefono = LimpiarTexto(dto.Telefono);
+        cliente.Email = LimpiarTexto(dto.Email);
 
         await repositorio.ActualizarAsync(cliente, ct);
         return Mapear(cliente);
     }
 
-    private static string? LimpiarEmail(string? email) =>
-        string.IsNullOrWhiteSpace(email) ? null : email.Trim();
+    private static string? LimpiarTexto(string? valor) =>
+        string.IsNullOrWhiteSpace(valor) ? null : valor.Trim();
 
     private static ClienteDto Mapear(Cliente c) =>
-        new(c.Id, c.Nombre, c.FechaNacimiento, c.Edad, c.Genero.ToString(), c.Altura, c.Email, c.FechaIngreso, c.Activo);
+        new(c.Id, c.Nombre, c.FechaNacimiento, c.Edad, c.Genero.ToString(), c.Altura, c.Telefono, c.Email, c.FechaIngreso, c.Activo);
 }

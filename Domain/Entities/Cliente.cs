@@ -9,6 +9,7 @@ public class Cliente
     public DateOnly FechaNacimiento { get; set; }
     public Genero Genero { get; set; }
     public int Altura { get; set; }
+    public string? Telefono { get; set; }
     public string? Email { get; set; }
     public DateOnly FechaIngreso { get; init; }
     public bool Activo { get; init; } = true;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import BadgeEstado from './BadgeEstado'
 import { listarClientes, type ClienteListado, type ResultadoPaginado } from '../services/clienteService'
 
 export default function ListadoClientes() {
@@ -42,6 +43,14 @@ export default function ListadoClientes() {
     navigate(`/clientes/${encodeURIComponent(seleccionado)}/editar`)
   }
 
+  const nuevaMedicion = () => {
+    if (!seleccionado) {
+      setAviso('Debe seleccionar el cliente al que desea registrar la medición.')
+      return
+    }
+    navigate(`/clientes/${encodeURIComponent(seleccionado)}/mediciones/nueva`)
+  }
+
   const totalPaginas = resultado ? Math.max(1, Math.ceil(resultado.total / resultado.tamanoPagina)) : 1
 
   return (
@@ -58,7 +67,7 @@ export default function ListadoClientes() {
       {aviso && <div className="alert alert-info" role="alert">{aviso}</div>}
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
-      <section className="card mb-3">
+      <section className="card nt-card--azul mb-3">
         <div className="card-header">Filtros</div>
         <div className="card-body">
           <div className="row g-2 align-items-end">
@@ -77,11 +86,12 @@ export default function ListadoClientes() {
         </div>
       </section>
 
-      <section className="card">
+      <section className="card nt-card--azul">
         <div className="card-header">Clientes</div>
         <div className="card-body">
-          <div className="mb-2 d-flex gap-2">
-            <button type="button" className="btn btn-secondary" onClick={editar}>Editar</button>
+          <div className="mb-2 d-flex flex-wrap gap-2">
+            <button type="button" className="btn btn-outline-primary" onClick={editar}>Editar</button>
+            <button type="button" className="btn btn-accent" onClick={nuevaMedicion}>Nueva Medición</button>
           </div>
           <div className="table-responsive">
           <table className="table table-hover align-middle">
@@ -90,6 +100,7 @@ export default function ListadoClientes() {
                 <th aria-label="Selección" />
                 <th>Id</th>
                 <th>Nombre</th>
+                <th>Teléfono</th>
                 <th>Email</th>
                 <th>Activo</th>
               </tr>
@@ -107,14 +118,15 @@ export default function ListadoClientes() {
                   <td>
                     <input type="radio" name="cliente" aria-label={`Seleccionar ${c.nombre}`} checked={seleccionado === c.id} onChange={() => setSeleccionado(c.id)} />
                   </td>
-                  <td>{c.id}</td>
+                  <td className="nt-celda-id">{c.id}</td>
                   <td>{c.nombre}</td>
+                  <td>{c.telefono}</td>
                   <td>{c.email}</td>
-                  <td><input type="checkbox" checked={c.activo} disabled readOnly aria-label="Activo" /></td>
+                  <td><BadgeEstado estado={c.activo ? 'Activo' : 'Inactivo'} /></td>
                 </tr>
               ))}
               {resultado?.items.length === 0 && (
-                <tr><td colSpan={5} className="text-center text-muted">Sin resultados.</td></tr>
+                <tr><td colSpan={6} className="text-center text-muted">Sin resultados.</td></tr>
               )}
             </tbody>
           </table>
@@ -122,8 +134,8 @@ export default function ListadoClientes() {
           <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center">
             <span>Página {pagina} de {totalPaginas} ({resultado?.total ?? 0} clientes)</span>
             <div className="btn-group">
-              <button type="button" className="btn btn-outline-secondary" disabled={pagina <= 1} onClick={() => setPagina(pagina - 1)}>Anterior</button>
-              <button type="button" className="btn btn-outline-secondary" disabled={pagina >= totalPaginas} onClick={() => setPagina(pagina + 1)}>Siguiente</button>
+              <button type="button" className="btn btn-outline-primary" disabled={pagina <= 1} onClick={() => setPagina(pagina - 1)}>Anterior</button>
+              <button type="button" className="btn btn-outline-primary" disabled={pagina >= totalPaginas} onClick={() => setPagina(pagina + 1)}>Siguiente</button>
             </div>
           </div>
         </div>

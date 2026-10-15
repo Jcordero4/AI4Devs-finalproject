@@ -7,6 +7,7 @@ export interface Cliente {
   edad: number
   genero: 'M' | 'F'
   altura: number
+  telefono: string | null
   email: string | null
   fechaIngreso: string
   activo: boolean
@@ -15,6 +16,7 @@ export interface Cliente {
 export interface ClienteListado {
   id: string
   nombre: string
+  telefono: string | null
   email: string | null
   activo: boolean
 }
@@ -31,6 +33,7 @@ export interface DatosCliente {
   fechaNacimiento: string
   genero: string
   altura: number | null
+  telefono: string
   email: string
 }
 
@@ -40,7 +43,11 @@ export interface FiltrosCliente {
   pagina: number
 }
 
-const aCuerpo = (d: DatosCliente) => ({ ...d, email: d.email.trim() === '' ? null : d.email.trim() })
+const aCuerpo = (d: DatosCliente) => ({
+  ...d,
+  telefono: d.telefono.trim() === '' ? null : d.telefono.trim(),
+  email: d.email.trim() === '' ? null : d.email.trim(),
+})
 
 export function listarClientes(filtros: FiltrosCliente) {
   const params = new URLSearchParams({ pagina: String(filtros.pagina) })

@@ -30,7 +30,7 @@ public class ClienteApiTests : IClassFixture<ClienteApiTests.Fabrica>
     public ClienteApiTests(Fabrica fabrica) => _http = fabrica.CreateClient();
 
     private static CrearClienteDto Nuevo(string id, string nombre) =>
-        new(id, nombre, new DateOnly(1990, 5, 20), "M", 175, null);
+        new(id, nombre, new DateOnly(1990, 5, 20), "M", 175, null, null);
 
     [Fact]
     public async Task Alta_Exitosa_DevuelveCreatedConDefaults()
@@ -75,7 +75,7 @@ public class ClienteApiTests : IClassFixture<ClienteApiTests.Fabrica>
     {
         await _http.PostAsJsonAsync("/api/clientes", Nuevo("ED-1", "Antes"));
 
-        var respuesta = await _http.PutAsJsonAsync("/api/clientes/ED-1", new EditarClienteDto("Despues", new DateOnly(1985, 1, 1), "F", 160, "a@b.com"));
+        var respuesta = await _http.PutAsJsonAsync("/api/clientes/ED-1", new EditarClienteDto("Despues", new DateOnly(1985, 1, 1), "F", 160, null, "a@b.com"));
 
         Assert.Equal(HttpStatusCode.OK, respuesta.StatusCode);
         var cliente = await _http.GetFromJsonAsync<ClienteDto>("/api/clientes/ED-1");
@@ -87,8 +87,63 @@ public class ClienteApiTests : IClassFixture<ClienteApiTests.Fabrica>
     public async Task ClienteInexistente_Devuelve404()
     {
         Assert.Equal(HttpStatusCode.NotFound, (await _http.GetAsync("/api/clientes/NOEXISTE")).StatusCode);
-        var put = await _http.PutAsJsonAsync("/api/clientes/NOEXISTE", new EditarClienteDto("X", new DateOnly(1985, 1, 1), "F", 160, null));
+        var put = await _http.PutAsJsonAsync("/api/clientes/NOEXISTE", new EditarClienteDto("X", new DateOnly(1985, 1, 1), "F", 160, null, null));
         Assert.Equal(HttpStatusCode.NotFound, put.StatusCode);
+    }
+
+    [Theory]
+    [InlineData("88887777")]
+    [InlineData("+50688887777")]
+    public async Task Alta_TelefonoValido_Devuelve201ConTelefono(string telefono)
+    {
+        var respuesta = await _http.PostAsJsonAsync("/api/clientes", Nuevo($"T-{telefono}", "Tel") with { Telefono = telefono });
+
+        Assert.Equal(HttpStatusCode.Created, respuesta.StatusCode);
+        var cliente = await respuesta.Content.ReadFromJsonAsync<ClienteDto>();
+        Assert.Equal(telefono, cliente!.Telefono);
+    }
+
+    [Theory]
+    [InlineData("abc12345")]
+    [InlineData("8888-7777")]
+    [InlineData("123456")]
+    [InlineData("+1234567890123456")]
+    public async Task Alta_TelefonoInvalido_Devuelve400ConErrorEnTelefono(string telefono)
+    {
+        var respuesta = await _http.PostAsJsonAsync("/api/clientes", Nuevo("TI-1", "Tel") with { Telefono = telefono });
+
+        Assert.Equal(HttpStatusCode.BadRequest, respuesta.StatusCode);
+        var problema = await respuesta.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
+        Assert.True(problema!.Errors.ContainsKey("Telefono"));
+        Assert.Equal(HttpStatusCode.NotFound, (await _http.GetAsync("/api/clientes/TI-1")).StatusCode);
+    }
+
+    [Fact]
+    public async Task Edicion_ActualizaYQuitaTelefono()
+    {
+        await _http.PostAsJsonAsync("/api/clientes", Nuevo("ET-1", "Tel") with { Telefono = "88887777" });
+
+        var actualiza = await _http.PutAsJsonAsync("/api/clientes/ET-1", new EditarClienteDto("Tel", new DateOnly(1990, 5, 20), "M", 175, "+50612345678", null));
+        Assert.Equal(HttpStatusCode.OK, actualiza.StatusCode);
+        Assert.Equal("+50612345678", (await _http.GetFromJsonAsync<ClienteDto>("/api/clientes/ET-1"))!.Telefono);
+
+        var invalido = await _http.PutAsJsonAsync("/api/clientes/ET-1", new EditarClienteDto("Tel", new DateOnly(1990, 5, 20), "M", 175, "12-34", null));
+        Assert.Equal(HttpStatusCode.BadRequest, invalido.StatusCode);
+        Assert.Equal("+50612345678", (await _http.GetFromJsonAsync<ClienteDto>("/api/clientes/ET-1"))!.Telefono);
+
+        var quita = await _http.PutAsJsonAsync("/api/clientes/ET-1", new EditarClienteDto("Tel", new DateOnly(1990, 5, 20), "M", 175, "", null));
+        Assert.Equal(HttpStatusCode.OK, quita.StatusCode);
+        Assert.Null((await _http.GetFromJsonAsync<ClienteDto>("/api/clientes/ET-1"))!.Telefono);
+    }
+
+    [Fact]
+    public async Task Listado_IncluyeTelefono()
+    {
+        await _http.PostAsJsonAsync("/api/clientes", Nuevo("LT-1", "Listado Tel") with { Telefono = "+50688887777" });
+
+        var listado = await _http.GetFromJsonAsync<ResultadoPaginadoDto<ClienteListadoDto>>("/api/clientes?id=LT-1");
+
+        Assert.Equal("+50688887777", Assert.Single(listado!.Items).Telefono);
     }
 
     [Fact]

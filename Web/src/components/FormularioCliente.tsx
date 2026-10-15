@@ -5,7 +5,13 @@ import { crearCliente, editarCliente, obtenerCliente, type DatosCliente } from '
 
 const MENSAJE_SALIR = 'Está seguro que desea salir de la pantalla, se perderán los datos si no los guarda primero.'
 
-const vacio: DatosCliente = { nombre: '', fechaNacimiento: '', genero: '', altura: null, email: '' }
+const vacio: DatosCliente = { nombre: '', fechaNacimiento: '', genero: '', altura: null, telefono: '', email: '' }
+
+const PATRON_TELEFONO = /^\+?\d{7,15}$/
+const MENSAJE_TELEFONO = "El teléfono solo admite dígitos y un '+' inicial (7 a 15 caracteres)."
+
+// Conserva solo dígitos y un '+' en la primera posición.
+const soloTelefono = (valor: string) => valor.replace(/(?!^\+)\D/g, '')
 
 const hoy = () => new Date().toISOString().slice(0, 10)
 
@@ -41,6 +47,7 @@ export default function FormularioCliente() {
           fechaNacimiento: c.fechaNacimiento,
           genero: c.genero,
           altura: c.altura,
+          telefono: c.telefono ?? '',
           email: c.email ?? '',
         }
         setDatos(cargado)
@@ -64,6 +71,11 @@ export default function FormularioCliente() {
       (!esEdicion && !id.trim()) || !datos.nombre.trim() || !datos.fechaNacimiento || !datos.genero || !datos.altura || datos.altura <= 0
     if (faltantes) {
       setErrores(['Faltan datos obligatorios por completar (Id, Nombre, Fecha de Nacimiento, Género y Altura).'])
+      return
+    }
+    const telefono = datos.telefono.trim()
+    if (telefono !== '' && !PATRON_TELEFONO.test(telefono)) {
+      setErrores([MENSAJE_TELEFONO])
       return
     }
     if (enviando) return
@@ -115,7 +127,7 @@ export default function FormularioCliente() {
           void guardar()
         }}
       >
-        <section className="card mb-3" aria-labelledby="titulo-datos-cliente">
+        <section className="card nt-card--azul mb-3" aria-labelledby="titulo-datos-cliente">
           <h2 id="titulo-datos-cliente" className="card-header h6 mb-0">Datos del cliente</h2>
           <div className="card-body">
             <div className="row g-3">
@@ -147,6 +159,10 @@ export default function FormularioCliente() {
                 <label htmlFor="altura" className="form-label">Altura (cm) <Obligatorio /></label>
                 <input id="altura" type="number" min={1} className="form-control" value={datos.altura ?? ''} required aria-required onChange={(e) => cambiar('altura', e.target.value === '' ? null : Number(e.target.value))} />
               </div>
+              <div className="col-12 col-md-4">
+                <label htmlFor="telefono" className="form-label">Teléfono</label>
+                <input id="telefono" type="tel" inputMode="tel" className="form-control" maxLength={15} value={datos.telefono} onChange={(e) => cambiar('telefono', soloTelefono(e.target.value))} />
+              </div>
               <div className="col-12 col-md-8">
                 <label htmlFor="email" className="form-label">Email</label>
                 <input id="email" className="form-control" maxLength={320} value={datos.email} onChange={(e) => cambiar('email', e.target.value)} />
@@ -165,7 +181,7 @@ export default function FormularioCliente() {
           <button type="button" className="btn btn-outline-secondary" onClick={volver} disabled={enviando}>
             <span aria-hidden="true">← </span>Volver
           </button>
-          <button type="submit" className="btn btn-primary" disabled={enviando}>
+          <button type="submit" className="btn btn-success" disabled={enviando}>
             {enviando ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />

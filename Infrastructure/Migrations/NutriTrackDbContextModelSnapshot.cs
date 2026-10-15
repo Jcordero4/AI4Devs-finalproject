@@ -17,7 +17,7 @@ namespace NutriTrack.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.31")
+                .HasAnnotation("ProductVersion", "8.0.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -55,11 +55,149 @@ namespace NutriTrack.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Nombre");
 
                     b.ToTable("Clientes", (string)null);
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.Medicion", b =>
+                {
+                    b.Property<string>("ClienteId")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<DateOnly>("FechaMedicion")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Agua")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Grasa")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("GrasaVisceral")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Imc")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("MasaMuscular")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Peso")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("ClienteId", "FechaMedicion");
+
+                    b.ToTable("Mediciones", (string)null);
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.PlanNutricional", b =>
+                {
+                    b.Property<string>("ClienteId")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<DateOnly>("FechaMedicion")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Agua")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Fruta")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Grasa")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Harinas")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Lacteo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Proteina")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Vegetales")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClienteId", "FechaMedicion");
+
+                    b.ToTable("PlanesNutricionales", (string)null);
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.Tratamiento", b =>
+                {
+                    b.Property<string>("ClienteId")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)");
+
+                    b.Property<DateOnly>("FechaMedicion")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Secuencia")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Dosis")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Producto")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("ClienteId", "FechaMedicion", "Secuencia");
+
+                    b.ToTable("Tratamientos", (string)null);
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.Medicion", b =>
+                {
+                    b.HasOne("NutriTrack.Domain.Entities.Cliente", null)
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.PlanNutricional", b =>
+                {
+                    b.HasOne("NutriTrack.Domain.Entities.Medicion", null)
+                        .WithOne("Plan")
+                        .HasForeignKey("NutriTrack.Domain.Entities.PlanNutricional", "ClienteId", "FechaMedicion")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.Tratamiento", b =>
+                {
+                    b.HasOne("NutriTrack.Domain.Entities.Medicion", null)
+                        .WithMany("Tratamientos")
+                        .HasForeignKey("ClienteId", "FechaMedicion")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NutriTrack.Domain.Entities.Medicion", b =>
+                {
+                    b.Navigation("Plan");
+
+                    b.Navigation("Tratamientos");
                 });
 #pragma warning restore 612, 618
         }

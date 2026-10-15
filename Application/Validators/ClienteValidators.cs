@@ -6,6 +6,8 @@ namespace NutriTrack.Application.Validators;
 internal static class ReglasCliente
 {
     public const string PatronEmail = @"^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$";
+    public const string PatronTelefono = @"^\+?\d{7,15}$";
+    public const string MensajeTelefono = "El teléfono solo admite dígitos y un '+' inicial (7 a 15 caracteres).";
 
     public static IRuleBuilderOptions<T, string?> ValidarGenero<T>(this IRuleBuilder<T, string?> rule) =>
         rule.NotEmpty().WithMessage("El género es obligatorio.")
@@ -32,6 +34,9 @@ public class CrearClienteDtoValidator : AbstractValidator<CrearClienteDto>
         RuleFor(x => x.FechaNacimiento).ValidarFechaNacimiento();
         RuleFor(x => x.Genero).ValidarGenero();
         RuleFor(x => x.Altura).ValidarAltura();
+        RuleFor(x => x.Telefono).Cascade(CascadeMode.Stop).MaximumLength(15).WithMessage(ReglasCliente.MensajeTelefono)
+            .Matches(ReglasCliente.PatronTelefono).WithMessage(ReglasCliente.MensajeTelefono)
+            .When(x => !string.IsNullOrWhiteSpace(x.Telefono));
         RuleFor(x => x.Email).MaximumLength(320).Matches(ReglasCliente.PatronEmail).WithMessage("El formato del email es inválido.")
             .When(x => !string.IsNullOrWhiteSpace(x.Email));
     }
@@ -46,6 +51,9 @@ public class EditarClienteDtoValidator : AbstractValidator<EditarClienteDto>
         RuleFor(x => x.FechaNacimiento).ValidarFechaNacimiento();
         RuleFor(x => x.Genero).ValidarGenero();
         RuleFor(x => x.Altura).ValidarAltura();
+        RuleFor(x => x.Telefono).Cascade(CascadeMode.Stop).MaximumLength(15).WithMessage(ReglasCliente.MensajeTelefono)
+            .Matches(ReglasCliente.PatronTelefono).WithMessage(ReglasCliente.MensajeTelefono)
+            .When(x => !string.IsNullOrWhiteSpace(x.Telefono));
         RuleFor(x => x.Email).MaximumLength(320).Matches(ReglasCliente.PatronEmail).WithMessage("El formato del email es inválido.")
             .When(x => !string.IsNullOrWhiteSpace(x.Email));
     }

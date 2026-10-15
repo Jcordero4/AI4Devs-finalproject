@@ -13,9 +13,10 @@ Esta definición del US-004 contiene la implementación de los US-005, US-006 y 
 4. Edad, entero, no nulo, autocalculado, apartir de la fecha de nacimiento
 5. Genero, caracter (char 'M'|'F'), no nulo, donde M= Masculino, F = Femenino, basico para el calculo de los valores de composicion corporal y plan nutricional
 6. Altura, entero, no nulo, representado en centímetros
-7. Email, string 320 (varchar de 320), acepta nulos
-8. Fecha de Ingreso, campo de fecha, no nulo, el sistema tomará la fecha actual
-9. Activo
+7. Telefono, string de 15 caracteres (Varchar 15), acepta nulos. Si se ingresa, solo dígitos con un símbolo + inicial opcional (código de país); sin letras, guiones ni espacios; mínimo 7 dígitos y máximo 15 caracteres en total
+8. Email, string 320 (varchar de 320), acepta nulos
+9. Fecha de Ingreso, campo de fecha, no nulo, el sistema tomará la fecha actual
+10. Activo
 
 ## CRUD
 Permite crear y editar, no hay eliminar clientes, solo desactivarlos
@@ -40,7 +41,7 @@ Estos filtros y el botón deben mostrarse en la misma fila.
 ### Pantalla de nuevo
 Debe tener:
 1. Titulo del Listado
-2. Seccion tipo Card donde se incluirá el Id, Nombre, Fecha de Nacimiento, la Edad (No editable se auto calcula con la fecha de nacimiento), Genero (lista desplegable con la opción de Masculino y Femenino, por default está en blanco sin seleccionar), altura, email y checkbox de activo que por defecto está marcado y no es editable.
+2. Seccion tipo Card donde se incluirá el Id, Nombre, Fecha de Nacimiento, la Edad (No editable se auto calcula con la fecha de nacimiento), Genero (lista desplegable con la opción de Masculino y Femenino, por default está en blanco sin seleccionar), altura, teléfono (opcional), email y checkbox de activo que por defecto está marcado y no es editable.
 3. Fuera del card agregar los botones de Volver y Guardar, agregar un icono al botón.
 4. El campo de fecha de nacimiento debe ser un datepicker de Jquery
 

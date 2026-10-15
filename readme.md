@@ -323,7 +323,7 @@ erDiagram
         int Edad "calculado, no almacenado"
         char1 Genero "M o F"
         int Altura "cm"
-        varchar Telefono
+        varchar15 Telefono "nullable"
         varchar320 Email "nullable"
         date FechaIngreso "autogenerado"
         boolean Activo
@@ -361,8 +361,73 @@ erDiagram
     }
 ```
 
+**Definición de tablas:**
+
+Detalle de campos tomado de los catálogos de los US indicados. Tipos en notación del US (`Varchar(n)`, `Char`, `Decimal(p,s)`).
+
+#### Cliente
+
+Fuente: `docs/US-004-CRUD-Cliente.md`.
+
+| # | Campo | Tipo | Obligatorio | Reglas |
+|---|-------|------|:---:|--------|
+| 1 | Id | Varchar(15) | Sí | PK. Representa cédula o pasaporte. Debe ser único. Inmutable después de creado. |
+| 2 | Nombre | Varchar(50) | Sí | Se crea índice para agilizar búsquedas. |
+| 3 | FechaNacimiento | Fecha | Sí | — |
+| 4 | Edad | Entero | Sí | Autocalculada a partir de FechaNacimiento. No editable, nunca negativa. En el modelo físico no se almacena. |
+| 5 | Genero | Char('M'\|'F') | Sí | M = Masculino, F = Femenino. Base para cálculo de composición corporal y plan nutricional. |
+| 6 | Altura | Entero | Sí | En centímetros. Debe ser mayor a 0. |
+| 7 | Telefono | Varchar(15) | No | Si se ingresa, solo dígitos con un `+` inicial opcional (código de país); sin letras, guiones, espacios ni paréntesis. Mínimo 7 dígitos y máximo 15 caracteres en total (`^\+?\d{7,15}$`). Vacío se guarda como nulo. |
+| 8 | Email | Varchar(320) | No | Si se ingresa, debe cumplir formato de correo válido (`texto@dominio.tld`). |
+| 9 | FechaIngreso | Fecha | Sí | Asignada automáticamente con la fecha actual al crear el cliente. No editable. |
+| 10 | Activo | Booleano | Sí | Por defecto `true` al crear. No editable manualmente en US-004. |
+
+#### Medicion
+
+Fuente: `docs/US-008-Medicion-Composicion-Corporal.md` (US-009 solo consulta estos datos).
+
+| # | Campo | Tipo | Obligatorio | Reglas |
+|---|-------|------|:---:|--------|
+| 1 | Id | Varchar(15) | Sí | PK compuesta (junto a FechaMedicion). FK a Cliente. |
+| 2 | FechaMedicion | Fecha | Sí | PK compuesta (junto a Id). Se autocompleta con la fecha actual, sin hora, formato `dd/MM/yyyy`. No editable. |
+| 3 | Peso | Decimal(10,2) | Sí | Valor positivo. |
+| 4 | Grasa | Decimal(10,2) | Sí | Porcentaje de grasa corporal. Valor positivo. |
+| 5 | MasaMuscular | Decimal(10,2) | Sí | Valor positivo. |
+| 6 | Agua | Decimal(10,2) | Sí | Porcentaje de agua corporal. Valor positivo. |
+| 7 | GrasaVisceral | Decimal(10,2) | Sí | Valor positivo. |
+| 8 | IMC | Decimal(10,2) | Sí | Índice de Masa Corporal. Valor positivo. |
+
+#### Tratamiento
+
+Fuente: `docs/US-008-Medicion-Composicion-Corporal.md`.
+
+| # | Campo | Tipo | Obligatorio | Reglas |
+|---|-------|------|:---:|--------|
+| 1 | Id | Varchar(15) | Sí | FK a Medicion (una medición puede tener varias filas de tratamiento). |
+| 2 | Secuencia | Entero | Sí | PK compuesta junto a Id. Autoincremental por medición; identifica cada fila de tratamiento. |
+| 3 | Producto | Varchar(50) | Sí | — |
+| 4 | Dosis | Varchar(150) | Sí | — |
+
+> El US define la PK como (`Id`, `Secuencia`); el diagrama la extiende con `FechaMedicion` porque la llave de `Medicion` es compuesta (ver notas del modelo).
+
+#### Plan_Nutricional
+
+Fuente: `docs/US-008-Medicion-Composicion-Corporal.md`.
+
+| # | Campo | Tipo | Obligatorio | Reglas |
+|---|-------|------|:---:|--------|
+| 1 | Id | Varchar(15) | Sí | PK y FK a Medicion (una fila de plan nutricional por medición). |
+| 2 | Fecha | Fecha | Sí | Corresponde a la `FechaMedicion` de la medición asociada; no se captura por separado en la UI. En el diagrama se nombra `FechaMedicion`. |
+| 3 | Lacteo | Entero | Sí | Valor por defecto 0. |
+| 4 | Fruta | Entero | Sí | Valor por defecto 0. |
+| 5 | Vegetales | Entero | Sí | Valor por defecto 0. |
+| 6 | Harinas | Entero | Sí | Valor por defecto 0. |
+| 7 | Proteina | Entero | Sí | Valor por defecto 0. |
+| 8 | Grasa | Entero | Sí | Valor por defecto 0. |
+| 9 | Agua | Entero | Sí | Valor por defecto 0. |
+
 **Notas del modelo:**
-- **Telefono** se agrega a `Cliente` porque la Pantalla de Listado de US-004 lo muestra como columna, aunque el catálogo de campos original no lo listaba — se corrige aquí para no perder ese dato.
+- **Telefono** se agrega a `Cliente` (opcional, `Varchar(15)`, solo dígitos con un `+` inicial opcional) porque la Pantalla de Listado de US-004 lo muestra como columna, aunque el catálogo de campos original no lo listaba; se incorporó al catálogo de US-004 y al código (change `agregar-telefono-cliente`).
 - **Secuencia** se agrega a `Tratamiento` porque una medición admite varios productos ("Nuevo Producto" en la UI); con solo `Id` como llave no era posible guardar más de una fila por medición.
 - La llave foránea de `Tratamiento` y `Plan_Nutricional` hacia `Medicion` es compuesta (`Id` + `FechaMedicion`), no solo `Id`, porque la llave primaria de `Medicion` también es compuesta — un `Id` de cliente por sí solo no identifica una medición específica.
 - `Plan_Nutricional` es 1:1 con `Medicion` (una fila de plan por cada medición); `Tratamiento` es 1:N (cero o varias filas por medición).

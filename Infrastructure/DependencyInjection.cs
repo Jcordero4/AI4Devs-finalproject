@@ -16,6 +16,7 @@ public static class DependencyInjection
             options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 0))));
 
         services.AddScoped<Application.Interfaces.IRepositorioCliente, Repositories.RepositorioCliente>();
+        services.AddScoped<Application.Interfaces.IRepositorioMedicion, Repositories.RepositorioMedicion>();
 
         return services;
     }
