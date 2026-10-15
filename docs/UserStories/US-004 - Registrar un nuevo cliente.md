@@ -43,7 +43,7 @@ Debe tener:
 1. Titulo del Listado
 2. Seccion tipo Card donde se incluirá el Id, Nombre, Fecha de Nacimiento, la Edad (No editable se auto calcula con la fecha de nacimiento), Genero (lista desplegable con la opción de Masculino y Femenino, por default está en blanco sin seleccionar), altura, teléfono (opcional), email y checkbox de activo que por defecto está marcado y no es editable.
 3. Fuera del card agregar los botones de Volver y Guardar, agregar un icono al botón.
-4. El campo de fecha de nacimiento debe ser un datepicker de Jquery
+4. El campo de fecha de nacimiento debe usar el selector de fecha nativo del navegador (`<input type="date">`)
 
 ### Pantalla de edición
 Es el mismo layout que la pantalla de nuevo, solo que debe permitir la edición de todos los campos excepto el de edad.

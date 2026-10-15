@@ -39,5 +39,5 @@ NutriTrack: sistema web de gestión de registros nutricionales. Solución: `Nutr
 - Autenticación JWT/roles está **fuera del MVP** (README §2.3): no agregar JwtBearer salvo que se pida.
 - `appsettings.json` solo lleva placeholders (`CHANGE_ME`) en la cadena de conexión; credenciales reales en `API/appsettings.Development.json` (gitignored).
 - CORS permite solo `Cors:AllowedOrigins` (por defecto `http://localhost:5173`).
-- `docs/NutriTrack_Project_Plan_ESP.docx` está desalineado con el código (JS puro, .NET 8); manda el README.
+- `docs/NutriTrack_Project_Plan_ESP.docx` se alineó con el código (.NET 10, React + TypeScript + Vite) el 2026-10-15; ante cualquier diferencia manda el README.
 - Al cambiar stack/estructura, actualizar también `README.md` (git lo rastrea como `readme.md`).

@@ -57,7 +57,7 @@ Este US-004 cubre la implementación completa del CRUD de Cliente e incluye las 
 1. Título de la pantalla.
 2. Sección tipo Card con: Id, Nombre, Fecha de Nacimiento, Edad (no editable, autocalculada), Género (lista desplegable Masculino/Femenino, en blanco por defecto), Altura, Teléfono (opcional), Email, y checkbox de Activo (marcado por defecto, no editable).
 3. Fuera del Card: botones "Volver" y "Guardar", cada uno con ícono.
-4. El campo Fecha de Nacimiento usa un datepicker de jQuery.
+4. El campo Fecha de Nacimiento usa el selector de fecha nativo del navegador (`<input type="date">`).
 
 ### Pantalla de Edición
 Mismo layout que la pantalla de Nuevo. Permite editar todos los campos excepto Edad y Id, ver Reglas de Negocio.
@@ -79,7 +79,7 @@ Mismo layout que la pantalla de Nuevo. Permite editar todos los campos excepto E
 - **GIVEN** el usuario ingresó un Email con formato inválido **WHEN** presiona "Guardar" **THEN** se muestra un mensaje de error de formato y no se guarda el cliente, pero se mantiene en la pantalla y conserva los datos introducidos.
 - **GIVEN** el usuario ingresó un Teléfono con letras, guiones, espacios, un `+` que no está al inicio, menos de 7 dígitos o más de 15 caracteres **WHEN** presiona "Guardar" **THEN** se muestra un mensaje de error de formato y no se guarda el cliente, pero se mantiene en la pantalla y conserva los datos introducidos.
 - **GIVEN** el usuario ingresó un Teléfono con solo dígitos, con o sin `+` inicial (por ejemplo `88887777` o `+50688887777`), o lo dejó vacío **WHEN** presiona "Guardar" **THEN** el cliente se guarda; un Teléfono vacío se almacena como nulo.
-- **GIVEN** el usuario selecciona una Fecha de Nacimiento **WHEN** la selecciona en el datepicker **THEN** el campo Edad se calcula y muestra automáticamente, sin permitir edición manual.
+- **GIVEN** el usuario selecciona una Fecha de Nacimiento **WHEN** la selecciona en el campo de fecha **THEN** el campo Edad se calcula y muestra automáticamente, sin permitir edición manual.
 - **GIVEN** el usuario no ingresó ningún dato aún **WHEN** presiona "Volver" **THEN** regresa al listado sin mostrar confirmación.
 - **GIVEN** el usuario ya ingresó algún dato (por ejemplo Nombre o Id) **WHEN** presiona "Volver" **THEN** se muestra el mensaje de confirmación "Está seguro que desea salir de la pantalla, se perderán los datos si no los guarda primero." antes de salir.
 

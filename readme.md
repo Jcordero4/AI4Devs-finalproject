@@ -40,11 +40,14 @@ El proyecto sigue la metodología Agile/Scrum, organizada en 4 sprints de 2 sema
 
 ### **1.4 Stack tecnológico**
 La solución se basa en el siguiente conjunto de tecnologías:
-- .NET Core 8 — Backend REST API y logica de negocios.
-- C# 12 — Lenguaje de programación del lado del servidor
-- Entity Framework Core 8: ORM para acceso y migraciones de bases de datos con tipado seguro.
+- .NET 10 (`net10.0`, ASP.NET Core Web API) — Backend REST API y lógica de negocios.
+- C# 14 — Lenguaje de programación del lado del servidor (versión por defecto de .NET 10).
+- Entity Framework Core 8 + Pomelo MySQL 8.x — ORM para acceso y migraciones de bases de datos con tipado seguro. Se mantiene la versión 8.x a propósito aunque el target sea `net10.0`.
+- FluentValidation — Validación de DTOs en el servidor.
 - MySQL 8 — Motor de base de datos relacional
-- React (Vite) + TypeScript — HTML5 / CSS3 / TypeScript (ES2022) — Interfaz de usuario frontend responsiva.
+- React 19 + TypeScript + Vite — HTML5 / CSS3 / TypeScript (ES2022) — Interfaz de usuario frontend responsiva (SPA).
+- Bootstrap 5.3.8 (solo CSS) — Estilos y componentes visuales.
+- xUnit — Pruebas unitarias y de integración (.NET).
 
 ### **1.5 URL del repositorio**
 En esta sección encontrará la URL del repositorio del proyecto, no se cargará el main si no el feature branch que corresponda a la etapa a entregar.
@@ -434,7 +437,7 @@ Fuente: `docs/US-008-Medicion-Composicion-Corporal.md`.
 - Esta tabla `Plan_Nutricional` (distribución de porciones por grupo alimenticio, ligada a una medición) es un concepto distinto del "Plan nutricional" versionado del Epic 4 (US-011 a US-013: título, objetivo, macros, horario de comidas); ese último no forma parte de este diagrama por no estar cubierto en US-004/008/009.
 - Los nombres de entidades aquí (`Cliente`, `Medicion`, `Tratamiento`, `Plan_Nutricional`) están en español, siguiendo `docs/US-004-CRUD-Cliente.md` y `docs/US-008-Medicion-Composicion-Corporal.md`. Las secciones 4.2 a 4.6 se actualizaron para usar los mismos nombres en español (`Cliente`, `Medicion`, `Plan`, `Usuario`, etc.); `Tratamiento` y `Plan_Nutricional` (sub-bloques de `Medicion`) no aparecen todavía en esos diagramas de contenedores/secuencia porque son anteriores al detalle documentado en US-008 — conviene incorporarlos ahí también más adelante.
 
-> **Nota sobre discrepancias de stack:** estos diagramas siguen el stack declarado en la sección 1.4 de este README (React + TypeScript + Vite) y el `TargetFramework` real del proyecto (`API/NutriTrackAPI.csproj` → `net10.0`). El plan `docs/NutriTrack_Project_Plan_ESP.docx` (§6.1 y §9) todavía describe **JavaScript puro sin framework** (el código usa TypeScript) y **.NET 8 / EF Core 8**. Conviene alinear el documento con el código, o viceversa, antes del Sprint 1.
+> **Nota sobre el stack:** estos diagramas siguen el stack declarado en la sección 1.4 de este README (.NET 10, React 19 + TypeScript + Vite), que coincide con el `TargetFramework` real del proyecto (`API/NutriTrackAPI.csproj` → `net10.0`). El plan `docs/NutriTrack_Project_Plan_ESP.docx` se alineó con ese stack (2026-10-15).
 
 ## 7. Tickets de Trabajo
 En esta sección se documentarán 3 tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Se da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto.
