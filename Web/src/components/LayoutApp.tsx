@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { IconoAjustes, IconoMenu, IconoUsuarios } from './Iconos'
 
 export default function LayoutApp() {
   const [menuAbierto, setMenuAbierto] = useState(false)
@@ -22,12 +23,20 @@ export default function LayoutApp() {
   return (
     <div className="nt-app">
       <aside id="nt-sidebar" className={`nt-sidebar${menuAbierto ? ' nt-sidebar--abierto' : ''}`}>
-        <div className="nt-sidebar__marca">NutriTrack</div>
+        <div className="nt-sidebar__marca">
+          <img
+            className="nt-sidebar__logo"
+            src="/logo-nutritrack.png"
+            alt="NutriTrack — Nutrition Software"
+            width={700}
+            height={200}
+          />
+        </div>
         <nav aria-label="Navegación principal" className="nt-sidebar__nav">
           <ul className="nt-nav-lista">
             <li>
               <NavLink to="/clientes" className="nt-nav-item" onClick={cerrarMenu}>
-                <span className="nt-nav-item__icono" aria-hidden="true">👥</span>
+                <IconoUsuarios />
                 Clientes
               </NavLink>
             </li>
@@ -35,8 +44,9 @@ export default function LayoutApp() {
         </nav>
         <div className="nt-sidebar__pie">
           <button type="button" className="nt-nav-item nt-nav-item--deshabilitado" disabled>
-            <span className="nt-nav-item__icono" aria-hidden="true">⚙</span>
+            <IconoAjustes />
             Configuración
+            <span className="nt-nav-item__nota">Próximamente</span>
           </button>
         </div>
       </aside>
@@ -44,32 +54,19 @@ export default function LayoutApp() {
       {menuAbierto && <div className="nt-backdrop" aria-hidden="true" onClick={cerrarMenu} />}
 
       <div className="nt-main">
-        <header className="nt-topbar">
+        <header className="nt-topbar d-lg-none">
           <button
             ref={botonMenuRef}
             type="button"
-            className="nt-topbar__menu btn btn-outline-secondary d-lg-none"
+            className="nt-topbar__menu btn btn-outline-secondary"
             aria-label="Abrir menú de navegación"
             aria-expanded={menuAbierto}
             aria-controls="nt-sidebar"
             onClick={() => setMenuAbierto((abierto) => !abierto)}
           >
-            <span aria-hidden="true">☰</span>
+            <IconoMenu />
           </button>
-          <div className="nt-topbar__buscador">
-            <span className="nt-topbar__lupa" aria-hidden="true">🔍</span>
-            <input
-              type="search"
-              className="form-control"
-              placeholder="Buscar..."
-              aria-label="Búsqueda global (no disponible)"
-              disabled
-            />
-          </div>
-          <div className="nt-topbar__usuario">
-            <span className="nt-avatar" aria-hidden="true">U</span>
-            <span className="d-none d-sm-inline">Usuario</span>
-          </div>
+          <span className="nt-topbar__titulo">NutriTrack</span>
         </header>
         <main className="nt-contenido">
           <Outlet />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../services/apiClient'
+import { IconoFlechaIzquierda } from './Iconos'
 import { crearCliente, editarCliente, obtenerCliente, type DatosCliente } from '../services/clienteService'
 
 const MENSAJE_SALIR = 'Está seguro que desea salir de la pantalla, se perderán los datos si no los guarda primero.'
@@ -179,7 +180,7 @@ export default function FormularioCliente() {
 
         <div className="d-flex flex-wrap gap-2">
           <button type="button" className="btn btn-outline-secondary" onClick={volver} disabled={enviando}>
-            <span aria-hidden="true">← </span>Volver
+            <IconoFlechaIzquierda />Volver
           </button>
           <button type="submit" className="btn btn-success" disabled={enviando}>
             {enviando ? (

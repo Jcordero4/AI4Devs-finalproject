@@ -19,6 +19,7 @@ import {
   type ValoresMedicion,
   type ValoresPlan,
 } from '../utils/medicionFormulario'
+import { IconoFlechaIzquierda } from './Iconos'
 import ModalConfirmacion from './ModalConfirmacion'
 import ModalPlanNutricion from './ModalPlanNutricion'
 import ModalTratamiento from './ModalTratamiento'
@@ -124,7 +125,7 @@ export default function NuevaMedicion() {
       <>
         <div className="alert alert-danger" role="alert">{error ?? 'No se pudo cargar la información del cliente.'}</div>
         <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/clientes')}>
-          <span aria-hidden="true">← </span>Volver
+          <IconoFlechaIzquierda />Volver
         </button>
       </>
     )
@@ -227,7 +228,7 @@ export default function NuevaMedicion() {
                   </tr>
                 ))}
                 {historial.length === 0 && (
-                  <tr><td colSpan={7} className="text-center text-muted">Sin resultados.</td></tr>
+                  <tr><td colSpan={7} className="text-center text-muted">Aún no hay mediciones registradas para este cliente.</td></tr>
                 )}
               </tbody>
             </table>
@@ -246,7 +247,7 @@ export default function NuevaMedicion() {
           )}
           <div className="d-flex flex-wrap gap-2">
             <button type="button" className="btn btn-outline-secondary" onClick={volver} disabled={guardando}>
-              <span aria-hidden="true">← </span>Volver
+              <IconoFlechaIzquierda />Volver
             </button>
             <button type="button" className="btn btn-success" onClick={() => void guardar()} disabled={guardando}>
               {guardando ? (

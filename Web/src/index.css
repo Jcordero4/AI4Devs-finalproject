@@ -1,52 +1,77 @@
-/* Tokens de NutriTrack (docs/estandarUI-UX.md §3.1). Hex estimados del mockup. */
+/* Tokens de NutriTrack (docs/estandarUI-UX.md §3). Marca: docs/Propuesta-UI-UX/Ficha-diseno-NutriTrack.md */
 :root {
-  --nt-navy: #0F2A5C;
-  --nt-primary: #1F5FD1;
-  --nt-primary-hover: #1A4FAF;
-  --nt-primary-active: #174590;
-  --nt-accent: #F28C28;
-  --nt-accent-hover: #F5A04E;
-  --nt-accent-active: #F7B26E;
-  --nt-success: #2E9E4F;
-  --nt-success-strong: #237A3C;
-  --nt-success-hover: #1E6532;
-  --nt-success-active: #195429;
+  /* Marca */
+  --nt-ink: #183B3A;
+  --nt-primary: #167546;
+  --nt-primary-hover: #0F5E37;
+  --nt-primary-active: #0B4A2B;
+  --nt-leaf: #2EAA57;
+  --nt-sky: #79C7E8;
+  --nt-accent: #F4CC4E;
+  --nt-accent-hover: #F7D877;
+  --nt-accent-active: #F9E3A0;
   --nt-danger: #D9534F;
   --nt-danger-strong: #B3302C;
-  --nt-warning: #E0A100;
-  --nt-primary-soft: #E4EDFB;
-  --nt-primary-tint: #EEF4FD;
-  --nt-table-head: #E8F0FC;
-  --nt-accent-soft: #FDE8D3;
-  --nt-success-soft: #DFF3E5;
   --nt-danger-soft: #FBE3E2;
-  --nt-heading: var(--nt-navy);
-  --nt-bg: #F1F5FC;
+
+  /* Alias semanticos (el nombre se conserva por compatibilidad; el color es el de la marca) */
+  --nt-success: var(--nt-leaf);
+  --nt-success-strong: var(--nt-primary);
+  --nt-success-hover: var(--nt-primary-hover);
+  --nt-success-active: var(--nt-primary-active);
+  --nt-warning: var(--nt-accent);
+
+  /* Tintes suaves derivados */
+  --nt-primary-soft: #E3F2E8;
+  --nt-primary-tint: #EEF7F1;
+  --nt-table-head: #E4F2E9;
+  --nt-success-soft: #DDF2E3;
+  --nt-accent-soft: #FDF0C0;
+  --nt-info-soft: #E3F4FB;
+  --nt-info-text: #0B5070;
+
+  /* Superficies y texto */
+  --nt-heading: var(--nt-ink);
+  --nt-bg: #F4F8F5;
   --nt-surface: #FFFFFF;
-  --nt-border: #E3E8F0;
-  --nt-text: #1B2740;
-  --nt-text-muted: #5B6A80;
-  --nt-radius: 0.5rem;
-  --nt-radius-sm: 0.375rem;
+  --nt-border: #E2ECE5;
+  --nt-border-input: #759286;
+  --nt-text: #1F3330;
+  --nt-text-muted: #546B64;
+
+  /* Forma */
+  --nt-radius: 1rem;
+  --nt-radius-control: 0.625rem;
+  --nt-radius-sm: 0.5rem;
+  --nt-sombra: 0 1px 2px rgba(24, 59, 58, 0.05), 0 4px 14px rgba(24, 59, 58, 0.05);
+  --nt-fuente: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* Overrides de variables Bootstrap */
   --bs-primary: var(--nt-primary);
-  --bs-primary-rgb: 31, 95, 209;
-  --bs-success: var(--nt-success);
-  --bs-success-rgb: 46, 158, 79;
+  --bs-primary-rgb: 22, 117, 70;
+  --bs-success: var(--nt-leaf);
+  --bs-success-rgb: 46, 170, 87;
+  --bs-info: var(--nt-sky);
+  --bs-info-rgb: 121, 199, 232;
   --bs-danger: var(--nt-danger);
   --bs-danger-rgb: 217, 83, 79;
-  --bs-warning: var(--nt-warning);
-  --bs-warning-rgb: 224, 161, 0;
+  --bs-warning: var(--nt-accent);
+  --bs-warning-rgb: 244, 204, 78;
   --bs-body-bg: var(--nt-bg);
   --bs-body-color: var(--nt-text);
+  --bs-body-font-family: var(--nt-fuente);
   --bs-border-color: var(--nt-border);
   --bs-secondary-color: var(--nt-text-muted);
   --bs-link-color: var(--nt-primary);
-  --bs-link-color-rgb: 31, 95, 209;
+  --bs-link-color-rgb: 22, 117, 70;
   --bs-link-hover-color: var(--nt-primary-hover);
-  --bs-border-radius: var(--nt-radius-sm);
-  --bs-focus-ring-color: rgba(31, 95, 209, 0.25);
+  --bs-link-hover-color-rgb: 15, 94, 55;
+  --bs-border-radius: var(--nt-radius-control);
+  --bs-border-radius-sm: var(--nt-radius-sm);
+  --bs-border-radius-lg: var(--nt-radius);
+  --bs-focus-ring-color: rgba(121, 199, 232, 0.45);
+  --bs-form-invalid-color: var(--nt-danger-strong);
+  --bs-form-invalid-border-color: var(--nt-danger-strong);
 }
 
 body {
@@ -54,68 +79,63 @@ body {
   color: var(--nt-text);
 }
 
-/* Bootstrap 5.3 define .btn-primary con variables --bs-btn-*; se reasignan al azul NutriTrack. */
-.btn-primary {
-  --bs-btn-bg: var(--nt-primary);
-  --bs-btn-border-color: var(--nt-primary);
-  --bs-btn-hover-bg: var(--nt-primary-hover);
-  --bs-btn-hover-border-color: var(--nt-primary-hover);
-  --bs-btn-active-bg: var(--nt-primary-active);
-  --bs-btn-active-border-color: var(--nt-primary-active);
-  --bs-btn-disabled-bg: var(--nt-primary);
-  --bs-btn-disabled-border-color: var(--nt-primary);
-  --bs-btn-focus-shadow-rgb: 31, 95, 209;
+/* Foco visible por teclado: contorno verde profundo (>= 3:1 sobre blanco y sobre el fondo) */
+a:focus-visible,
+.form-check-input:focus-visible,
+.btn:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--nt-primary);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
-.btn-success {
-  --bs-btn-color: #fff;
-  --bs-btn-bg: var(--nt-success-strong);
-  --bs-btn-border-color: var(--nt-success-strong);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--nt-success-hover);
-  --bs-btn-hover-border-color: var(--nt-success-hover);
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: var(--nt-success-active);
-  --bs-btn-active-border-color: var(--nt-success-active);
-  --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: var(--nt-success-strong);
-  --bs-btn-disabled-border-color: var(--nt-success-strong);
-  --bs-btn-focus-shadow-rgb: 35, 122, 60;
-}
-
-/* Acción destacada/derivada: naranja con texto navy (blanco sobre naranja = 2.45:1, no cumple AA) */
-.btn-accent {
-  --bs-btn-color: var(--nt-navy);
-  --bs-btn-bg: var(--nt-accent);
-  --bs-btn-border-color: var(--nt-accent);
-  --bs-btn-hover-color: var(--nt-navy);
-  --bs-btn-hover-bg: var(--nt-accent-hover);
-  --bs-btn-hover-border-color: var(--nt-accent-hover);
-  --bs-btn-active-color: var(--nt-navy);
-  --bs-btn-active-bg: var(--nt-accent-active);
-  --bs-btn-active-border-color: var(--nt-accent-active);
-  --bs-btn-disabled-color: var(--nt-navy);
-  --bs-btn-disabled-bg: var(--nt-accent);
-  --bs-btn-disabled-border-color: var(--nt-accent);
-  --bs-btn-focus-shadow-rgb: 242, 140, 40;
+/* Bootstrap 5.3 define los botones con variables --bs-btn-*; se reasignan a la marca. */
+.btn {
+  --bs-btn-border-radius: var(--nt-radius-control);
   font-weight: 500;
 }
 
-.btn-outline-primary {
-  --bs-btn-color: var(--nt-primary);
-  --bs-btn-border-color: var(--nt-primary);
-  --bs-btn-hover-color: var(--nt-primary-active);
-  --bs-btn-hover-bg: var(--nt-primary-soft);
-  --bs-btn-hover-border-color: var(--nt-primary);
-  --bs-btn-active-color: var(--nt-primary-active);
-  --bs-btn-active-bg: var(--nt-primary-soft);
-  --bs-btn-active-border-color: var(--nt-primary-active);
-  --bs-btn-disabled-color: var(--nt-primary);
-  --bs-btn-disabled-border-color: var(--nt-primary);
-  --bs-btn-focus-shadow-rgb: 31, 95, 209;
+.btn-sm {
+  --bs-btn-border-radius: var(--nt-radius-sm);
 }
 
-/* Secundarias (Volver, Cerrar, paginacion): outline azul; sin gris plano */
+/* Primario / Guardar: verde profundo (blanco sobre #167546 = 5.73:1; el verde hoja da 3.00:1) */
+.btn-primary,
+.btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--nt-primary);
+  --bs-btn-border-color: var(--nt-primary);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--nt-primary-hover);
+  --bs-btn-hover-border-color: var(--nt-primary-hover);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--nt-primary-active);
+  --bs-btn-active-border-color: var(--nt-primary-active);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--nt-primary);
+  --bs-btn-disabled-border-color: var(--nt-primary);
+  --bs-btn-focus-shadow-rgb: 22, 117, 70;
+}
+
+/* Énfasis: amarillo solar con texto tinta (tinta sobre #F4CC4E = 7.88:1; blanco no cumple) */
+.btn-accent {
+  --bs-btn-color: var(--nt-ink);
+  --bs-btn-bg: var(--nt-accent);
+  --bs-btn-border-color: var(--nt-accent);
+  --bs-btn-hover-color: var(--nt-ink);
+  --bs-btn-hover-bg: var(--nt-accent-hover);
+  --bs-btn-hover-border-color: var(--nt-accent-hover);
+  --bs-btn-active-color: var(--nt-ink);
+  --bs-btn-active-bg: var(--nt-accent-active);
+  --bs-btn-active-border-color: var(--nt-accent-active);
+  --bs-btn-disabled-color: var(--nt-ink);
+  --bs-btn-disabled-bg: var(--nt-accent);
+  --bs-btn-disabled-border-color: var(--nt-accent);
+  --bs-btn-focus-shadow-rgb: 244, 204, 78;
+  font-weight: 600;
+}
+
+.btn-outline-primary,
 .btn-outline-secondary {
   --bs-btn-color: var(--nt-primary);
   --bs-btn-border-color: var(--nt-primary);
@@ -127,21 +147,23 @@ body {
   --bs-btn-active-border-color: var(--nt-primary-active);
   --bs-btn-disabled-color: var(--nt-primary);
   --bs-btn-disabled-border-color: var(--nt-primary);
-  --bs-btn-focus-shadow-rgb: 31, 95, 209;
+  --bs-btn-focus-shadow-rgb: 22, 117, 70;
 }
 
 .btn-outline-danger {
   --bs-btn-color: var(--nt-danger-strong);
   --bs-btn-border-color: var(--nt-danger-strong);
+  --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: var(--nt-danger-strong);
   --bs-btn-hover-border-color: var(--nt-danger-strong);
+  --bs-btn-active-color: #fff;
   --bs-btn-active-bg: var(--nt-danger-strong);
   --bs-btn-active-border-color: var(--nt-danger-strong);
   --bs-btn-disabled-color: var(--nt-danger-strong);
   --bs-btn-disabled-border-color: var(--nt-danger-strong);
 }
 
-/* btn-secondary (gris solido) prohibido: si aparece, se ve como outline azul */
+/* btn-secondary (gris solido) prohibido: si aparece, se ve como outline verde */
 .btn-secondary {
   --bs-btn-color: var(--nt-primary);
   --bs-btn-bg: transparent;
@@ -157,11 +179,29 @@ body {
   --bs-btn-disabled-border-color: var(--nt-primary);
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: var(--nt-heading);
+/* Iconos SVG inline (components/Iconos.tsx): heredan el color del texto */
+.nt-icono {
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+  vertical-align: -0.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Tablas: encabezado azul claro, hover y seleccion con tinte azul */
+.btn > .nt-icono:not(:only-child) {
+  margin-right: 0.4rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--nt-heading);
+  font-weight: 700;
+}
+
+/* Tablas: encabezado menta con texto tinta, hover y seleccion verdes suaves */
 .table {
   --bs-table-bg: transparent;
   --bs-table-hover-bg: var(--nt-primary-tint);
@@ -171,7 +211,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .table > thead > tr > th {
   background-color: var(--nt-table-head);
-  color: var(--nt-navy);
+  color: var(--nt-ink);
   font-weight: 600;
   border-bottom: 2px solid var(--nt-primary-soft);
 }
@@ -189,12 +229,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .table > tbody > tr.table-primary > :first-child {
-  box-shadow: inset 3px 0 0 var(--nt-primary);
+  box-shadow: inset 4px 0 0 var(--nt-primary);
 }
 
-/* Badges de estado (docs/estandarUI-UX.md §3.2): fondo suave + texto oscuro + borde fino */
+/* Badges de estado (docs/estandarUI-UX.md §3.2): chip con punto + texto oscuro + borde fino */
 .nt-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   padding: 0.25em 0.7em;
   border: 1px solid var(--nt-badge-borde);
   border-radius: 999px;
@@ -205,42 +247,106 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.3;
 }
 
-.nt-badge--ambar { --nt-badge-fondo: #FFF3D6; --nt-badge-texto: #8A5A00; --nt-badge-borde: #F0D58C; }
-.nt-badge--azul { --nt-badge-fondo: var(--nt-primary-soft); --nt-badge-texto: #1F4FA8; --nt-badge-borde: #B9CDF2; }
-.nt-badge--naranja { --nt-badge-fondo: var(--nt-accent-soft); --nt-badge-texto: #9A4F0A; --nt-badge-borde: #F2C79B; }
-.nt-badge--verde { --nt-badge-fondo: var(--nt-success-soft); --nt-badge-texto: #1E6B36; --nt-badge-borde: #A9DDB7; }
-.nt-badge--gris { --nt-badge-fondo: #ECEFF4; --nt-badge-texto: #4A566B; --nt-badge-borde: #CDD4E0; }
+.nt-badge::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.nt-badge--ambar { --nt-badge-fondo: #FFF8E1; --nt-badge-texto: #6F4B00; --nt-badge-borde: #EBD27F; }
+.nt-badge--azul { --nt-badge-fondo: var(--nt-info-soft); --nt-badge-texto: var(--nt-info-text); --nt-badge-borde: var(--nt-sky); }
+.nt-badge--naranja { --nt-badge-fondo: var(--nt-accent-soft); --nt-badge-texto: #664A00; --nt-badge-borde: var(--nt-accent); }
+.nt-badge--verde { --nt-badge-fondo: var(--nt-success-soft); --nt-badge-texto: #115C37; --nt-badge-borde: #9BD6AE; }
+.nt-badge--gris { --nt-badge-fondo: #EDF1EE; --nt-badge-texto: #44554F; --nt-badge-borde: #CAD6CF; }
 .nt-badge--rojo { --nt-badge-fondo: var(--nt-danger-soft); --nt-badge-texto: #9C2B27; --nt-badge-borde: #F1B5B2; }
 
-/* Tarjetas: superficie blanca, borde fino, sombra mínima */
+/* Chip informativo (p. ej. cantidad de resultados) */
+.nt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.75rem;
+  border: 1px solid var(--nt-border);
+  border-radius: 999px;
+  background-color: var(--nt-primary-soft);
+  color: var(--nt-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Tarjetas: superficie blanca, borde suave, radio 16px, sombra tenue */
 .card {
   --bs-card-bg: var(--nt-surface);
   --bs-card-border-color: var(--nt-border);
   --bs-card-border-radius: var(--nt-radius);
   --bs-card-cap-bg: var(--nt-surface);
-  box-shadow: 0 1px 2px rgba(15, 42, 92, 0.05);
+  --bs-card-cap-padding-y: 0.9rem;
+  --bs-card-cap-padding-x: 1.25rem;
+  --bs-card-spacer-x: 1.25rem;
+  --bs-card-spacer-y: 1.25rem;
+  box-shadow: var(--nt-sombra);
 }
 
 .card-header {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--nt-heading);
 }
 
-/* Tarjetas con franja superior por funcion: azul datos, naranja plan/tratamiento, verde resultados */
-.nt-card--azul { border-top: 3px solid var(--nt-primary); }
-.nt-card--naranja { border-top: 3px solid var(--nt-accent); }
-.nt-card--verde { border-top: 3px solid var(--nt-success); }
+/* Franja superior por funcion (nombres semanticos): azul -> azul cielo, naranja -> amarillo solar, verde -> verde hoja */
+.nt-card--azul { border-top: 4px solid var(--nt-sky); }
+.nt-card--naranja { border-top: 4px solid var(--nt-accent); }
+.nt-card--verde { border-top: 4px solid var(--nt-leaf); }
 
 /* Inputs */
+.form-label {
+  color: var(--nt-ink);
+  font-weight: 500;
+}
+
 .form-control,
 .form-select {
-  border-color: var(--nt-border);
+  border-color: var(--nt-border-input);
 }
 
 .form-control:focus,
 .form-select:focus {
   border-color: var(--nt-primary);
   box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+
+.form-check-input {
+  border-color: var(--nt-border-input);
+}
+
+.form-check-input:checked {
+  background-color: var(--nt-primary);
+  border-color: var(--nt-primary);
+}
+
+/* Alertas informativas con la paleta de marca (azul cielo, texto oscuro) */
+.alert-info {
+  --bs-alert-bg: var(--nt-info-soft);
+  --bs-alert-color: var(--nt-info-text);
+  --bs-alert-border-color: var(--nt-sky);
+}
+
+.alert {
+  --bs-alert-border-radius: var(--nt-radius-control);
+}
+
+/* Modales: mismo lenguaje que las tarjetas */
+.modal {
+  --bs-modal-border-radius: var(--nt-radius);
+  --bs-modal-border-color: var(--nt-border);
+  --bs-modal-header-border-color: var(--nt-border);
+  --bs-modal-footer-border-color: var(--nt-border);
+  --bs-modal-box-shadow: 0 12px 40px rgba(24, 59, 58, 0.25);
+}
+
+.modal-content {
+  border-top: 4px solid var(--nt-leaf);
 }
 
 /* Layout de aplicación (docs/estandarUI-UX.md §4) */
@@ -252,8 +358,15 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   padding: 1rem 0.75rem;
-  background-color: var(--nt-navy);
-  color: var(--nt-surface);
+  overflow-y: auto;
+  color: #fff;
+  /* Verde profundo + patron de hojas; la capa unifica el tono y garantiza el contraste del texto */
+  background-color: var(--nt-primary);
+  background-image:
+    linear-gradient(180deg, rgba(22, 117, 70, 0.25) 0%, rgba(11, 74, 43, 0.35) 100%),
+    url('./assets/patron-hojas-sidebar.jpg');
+  background-size: cover;
+  background-position: center;
   transform: translateX(-100%);
   visibility: hidden;
   transition: transform 0.2s ease, visibility 0.2s;
@@ -264,10 +377,20 @@ h1, h2, h3, h4, h5, h6 {
   visibility: visible;
 }
 
+/* Placa blanca: el texto del logo es verde y no se lee sobre el sidebar */
 .nt-sidebar__marca {
-  padding: 0.5rem 0.75rem 1.25rem;
-  font-size: 1.25rem;
-  font-weight: 700;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 14px;
+  background-color: var(--nt-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.nt-sidebar__logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .nt-sidebar__nav {
@@ -283,36 +406,41 @@ h1, h2, h3, h4, h5, h6 {
 .nt-nav-item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
   width: 100%;
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.75rem;
   border: 0;
-  border-radius: var(--nt-radius);
+  border-radius: var(--nt-radius-control);
   background: transparent;
-  color: color-mix(in srgb, var(--nt-surface) 85%, transparent);
+  color: #EAF5EE;
   font-size: 1rem;
   text-align: left;
   text-decoration: none;
 }
 
 .nt-nav-item:hover {
-  background-color: color-mix(in srgb, var(--nt-surface) 10%, transparent);
-  color: var(--nt-surface);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .nt-nav-item:focus-visible {
-  outline: 2px solid var(--nt-surface);
+  outline: 3px solid #fff;
   outline-offset: 2px;
 }
 
+/* Ítem activo claro: fondo menta, texto tinta, icono verde profundo */
 .nt-nav-item.active {
-  background-color: var(--nt-primary);
-  color: var(--nt-surface);
+  background-color: var(--nt-primary-soft);
+  color: var(--nt-ink);
   font-weight: 600;
 }
 
+.nt-nav-item.active .nt-icono {
+  color: var(--nt-primary);
+}
+
 .nt-nav-item--deshabilitado:disabled {
-  color: color-mix(in srgb, var(--nt-surface) 60%, transparent);
+  color: #B9D5C5;
   cursor: not-allowed;
 }
 
@@ -320,11 +448,19 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 
+.nt-nav-item__nota {
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
 .nt-backdrop {
   position: fixed;
   inset: 0;
   z-index: 1040;
-  background-color: color-mix(in srgb, var(--nt-navy) 50%, transparent);
+  background-color: color-mix(in srgb, var(--nt-ink) 55%, transparent);
 }
 
 .nt-main {
@@ -333,6 +469,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
 }
 
+/* Topbar clara, solo movil (bajo lg): hamburguesa + nombre del producto; sin controles placeholder */
 .nt-topbar {
   position: sticky;
   top: 0;
@@ -342,49 +479,13 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background-color: var(--nt-surface);
-  border-bottom: 2px solid var(--nt-primary-soft);
+  border-bottom: 1px solid var(--nt-border);
 }
 
-.nt-topbar__buscador {
-  position: relative;
-  flex: 1 1 auto;
-  max-width: 32rem;
-  margin-inline: auto;
-}
-
-.nt-topbar__buscador .form-control {
-  padding-left: 2.25rem;
-  border-radius: 999px;
-  background-color: var(--nt-bg);
-}
-
-.nt-topbar__lupa {
-  position: absolute;
-  top: 50%;
-  left: 0.8rem;
-  transform: translateY(-50%);
-  font-size: 0.85rem;
-  pointer-events: none;
-}
-
-.nt-topbar__usuario {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-  color: var(--nt-text);
-}
-
-.nt-avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: var(--nt-primary);
-  color: var(--nt-surface);
-  font-weight: 600;
+.nt-topbar__titulo {
+  color: var(--nt-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .nt-contenido {
@@ -399,7 +500,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .nt-encabezado__subtitulo {
@@ -409,6 +510,40 @@ h1, h2, h3, h4, h5, h6 {
 
 .nt-fila-seleccionable {
   cursor: pointer;
+}
+
+/* Estado vacio útil */
+.nt-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  color: var(--nt-text-muted);
+  text-align: center;
+}
+
+.nt-vacio__icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: var(--nt-primary-soft);
+  color: var(--nt-primary);
+  font-size: 1.4rem;
+}
+
+.nt-vacio__titulo {
+  margin: 0;
+  color: var(--nt-ink);
+  font-weight: 600;
+}
+
+.nt-vacio__texto {
+  max-width: 28rem;
+  margin: 0;
 }
 
 /* Modales apilados (docs/estandarUI-UX.md §5): el segundo se dibuja sobre el primero */
@@ -435,7 +570,7 @@ h1, h2, h3, h4, h5, h6 {
   max-height: calc(var(--nt-fila-alto) * 11);
   overflow-y: auto;
   border: 1px solid var(--nt-border);
-  border-radius: var(--nt-radius-sm);
+  border-radius: var(--nt-radius-control);
 }
 
 .nt-tabla-scroll thead th {
@@ -443,7 +578,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   z-index: 1;
   background-color: var(--nt-table-head);
-  color: var(--nt-navy);
+  color: var(--nt-ink);
   font-weight: 600;
   white-space: nowrap;
   box-shadow: inset 0 -2px 0 var(--nt-primary-soft);
@@ -461,7 +596,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .nt-contenido {
-    padding: 1.5rem 2rem;
+    padding: 2rem;
   }
 
   .nt-backdrop {
@@ -473,4 +608,10 @@ h1, h2, h3, h4, h5, h6 {
 .campo-obligatorio {
   color: var(--nt-danger-strong);
   margin-left: 0.15rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-sidebar {
+    transition: none;
+  }
 }

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { filaCompleta, type FilaTratamiento } from '../utils/medicionFormulario'
+import { IconoMas, IconoPapelera } from './Iconos'
 import ModalBase from './ModalBase'
 import ModalConfirmacion from './ModalConfirmacion'
 
@@ -56,7 +57,7 @@ export default function ModalTratamiento({ filas, onCambiarFilas, onCerrar }: Mo
           <>
             <button type="button" className="btn btn-outline-secondary" onClick={intentarCerrar}>Cerrar</button>
             <button ref={botonNuevoRef} type="button" className="btn btn-primary" onClick={agregarFila}>
-              <span aria-hidden="true">+ </span>Nuevo Producto
+              <IconoMas />Nuevo Producto
             </button>
           </>
         }
@@ -109,9 +110,10 @@ export default function ModalTratamiento({ filas, onCambiarFilas, onCerrar }: Mo
                         type="button"
                         className="btn btn-outline-danger btn-sm"
                         aria-label={`Eliminar tratamiento, fila ${i + 1}`}
+                        title="Eliminar tratamiento"
                         onClick={() => setClaveAEliminar(fila.clave)}
                       >
-                        <span aria-hidden="true">🗑</span>
+                        <IconoPapelera />
                       </button>
                     </td>
                   </tr>

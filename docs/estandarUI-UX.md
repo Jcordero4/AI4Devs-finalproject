@@ -4,15 +4,16 @@ Memoria de diseño del frontend (`Web/`). La mantiene el agente `frontend-design
 
 Precedencia: `openspec/specs/` define comportamiento; `README.md` define stack; este documento define cómo se ve y se construye la UI.
 
-## 1. Stack UI
+## 1. Stack UI y marca
 
 - React 19 + TypeScript + Vite + `react-router-dom`.
-- Bootstrap **5.3.8** solo vía CSS: `import 'bootstrap/dist/css/bootstrap.min.css'` en `Web/src/main.tsx`. Sin React-Bootstrap ni otras librerías UI.
+- Bootstrap **5.3.8** solo vía CSS: `import 'bootstrap/dist/css/bootstrap.min.css'` en `Web/src/main.tsx`. Sin React-Bootstrap, librerías de iconos ni de fuentes.
 - Idioma de UI y código: español.
+- **Marca**: fuente de diseño `docs/Propuesta-UI-UX/Ficha-diseno-NutriTrack.md` (rediseño 2026-10-16). Logo `Web/public/logo-nutritrack.png` (hoja verde, flor azul cielo con centro amarillo, texto verde); patrón de hojas optimizado en `Web/src/assets/patron-hojas-sidebar.jpg` (13 KB, 512x768). `NutriTrack-hojas.png` no se usa. Favicon: se conserva `Web/public/favicon.svg` (plantilla Vite) hasta tener uno propio. `index.html`: `lang="es"`, título "NutriTrack — Nutrition Software".
 
 ## 2. Estructura y convenciones
 
-- `Web/src/components/`: componentes y pantallas (`PascalCase.tsx`, export default). Hoy: `LayoutApp.tsx` (sidebar + topbar + `<Outlet />`, ruta padre), `ListadoClientes.tsx`, `FormularioCliente.tsx`, `NuevaMedicion.tsx` y los modales `ModalBase.tsx` (base reutilizable), `ModalConfirmacion.tsx`, `ModalTratamiento.tsx`, `ModalPlanNutricion.tsx`; `BadgeEstado.tsx` (mapa estado -> tono, §3.2).
+- `Web/src/components/`: componentes y pantallas (`PascalCase.tsx`, export default). Hoy: `LayoutApp.tsx` (sidebar + topbar + `<Outlet />`, ruta padre), `ListadoClientes.tsx`, `FormularioCliente.tsx`, `NuevaMedicion.tsx` y los modales `ModalBase.tsx` (base reutilizable), `ModalConfirmacion.tsx`, `ModalTratamiento.tsx`, `ModalPlanNutricion.tsx`; `BadgeEstado.tsx` (mapa estado -> tono, §3.2) e `Iconos.tsx` (iconos SVG, §5).
 - `Web/src/hooks/`: hooks reutilizables (`useDatosMedicion`: cliente + histórico de mediciones).
 - `Web/src/utils/`: lógica pura de formulario sin React (`medicionFormulario.ts`: tipos de captura, validación por bloques, formato de fecha).
 - `Web/src/services/`: acceso a API. `apiClient.ts` (base `VITE_API_URL`, `credentials: 'include'`, `ApiError` con `status` y `errores`) y un servicio por entidad (`clienteService.ts`).
@@ -21,154 +22,142 @@ Precedencia: `openspec/specs/` define comportamiento; `README.md` define stack; 
 
 ## 3. Identidad visual y paleta
 
-Referencia: `docs/DisenoSistemasUI-UX.jpeg`. Se toma **solo el estilo visual** (colores, forma de componentes, layout); no la marca, logo ni módulos del mockup. Los hex son **estimados** a partir de la imagen: confirmar valores oficiales y ajustar aquí.
-
-Estilo general: corporativo con presencia de color (no "blanco y gris"): fondo con tinte azulado, tarjetas blancas con borde fino, esquinas redondeadas (~8px) y franja superior de color por función, sombra muy suave, sidebar azul oscuro, encabezados de tabla azul claro, naranja y verde en botones según función, tipografía sans-serif legible (la de Bootstrap por defecto).
+Referencia: ficha `docs/Propuesta-UI-UX/Ficha-diseno-NutriTrack.md` (sustituye al mockup anterior `docs/DisenoSistemasUI-UX.jpeg`, retirado). Personalidad: bienestar profesional, limpia y cálida. Tarjetas blancas con radio 16px, bordes suaves y sombra tenue; botones e inputs con radio 10px; chips redondeados; tipografía sans-serif del sistema (`system-ui, Segoe UI, Roboto…`; Inter no está disponible en el proyecto y no se agrega), títulos en tinta (`--nt-ink`) con peso 700.
 
 ### 3.1 Tokens de color
 
-| Token | Hex (aprox.) | Uso |
+| Token | Hex | Uso |
 |---|---|---|
-| `--nt-navy` | `#0F2A5C` | Fondo del sidebar |
-| `--nt-primary` | `#1F5FD1` | Botón primario, ítem activo del menú, enlaces, tabs activas |
-| `--nt-accent` | `#F28C28` | Acción destacada secundaria, paso activo de timeline, total resaltado |
-| `--nt-success` | `#2E9E4F` | Estados positivos, botón de confirmación, delta positivo |
-| `--nt-danger` | `#D9534F` | Eliminar, errores |
-| `--nt-warning` | `#E0A100` | Estados pendientes |
-| `--nt-success-strong` | `#237A3C` | Fondo de `btn-success` (`--nt-success` con texto blanco da 3.43:1, no cumple AA); hover `#1E6532`, activo `#195429` |
-| `--nt-danger-strong` | `#B3302C` | Texto/borde de rojo sobre claro (asterisco, `btn-outline-danger`); `--nt-danger` sobre blanco da 3.96:1 |
-| `--nt-accent-hover` / `--nt-accent-active` | `#F5A04E` / `#F7B26E` | Hover/activo de `btn-accent` (más claros: con texto navy el contraste sube) |
-| `--nt-primary-soft` | `#E4EDFB` | Fila seleccionada, hover de outline azul, badge azul |
-| `--nt-primary-tint` | `#EEF4FD` | Hover de fila de tabla |
-| `--nt-table-head` | `#E8F0FC` | Encabezado de tabla (texto `--nt-navy`, peso 600) |
-| `--nt-accent-soft` | `#FDE8D3` | Badge naranja, total resaltado, ícono pastel |
-| `--nt-success-soft` | `#DFF3E5` | Badge verde, ícono pastel |
-| `--nt-danger-soft` | `#FBE3E2` | Badge rojo, ícono pastel |
-| `--nt-heading` | `= --nt-navy` | `h1`-`h6` y títulos de tarjeta |
-| `--nt-bg` | `#F1F5FC` | Fondo de la aplicación (tinte azulado) |
-| `--nt-surface` | `#FFFFFF` | Tarjetas, topbar, tablas |
-| `--nt-border` | `#E3E8F0` | Bordes de tarjetas, tablas e inputs |
-| `--nt-text` | `#1B2740` | Texto principal |
-| `--nt-text-muted` | `#5B6A80` | Subtítulos, placeholders, texto secundario |
+| `--nt-ink` | `#183B3A` | Títulos, texto sobre amarillo, encabezado de tabla, ítem activo del menú (reemplaza `--nt-navy`) |
+| `--nt-primary` | `#167546` | **Verde profundo**: sidebar, botón primario/guardar, enlaces, foco, selección. Hover `--nt-primary-hover` `#0F5E37`, activo `--nt-primary-active` `#0B4A2B` |
+| `--nt-leaf` | `#2EAA57` | **Verde hoja**: solo decorativo (franja de tarjeta, íconos, bordes de validación). **Nunca texto blanco encima** (3.00:1) |
+| `--nt-sky` | `#79C7E8` | Azul cielo: información y acentos (franja de tarjeta azul, borde de badge/alerta informativa, anillo de foco de inputs). No es color de texto (1.88:1 sobre blanco) |
+| `--nt-accent` | `#F4CC4E` | **Amarillo solar**: énfasis (`btn-accent` con texto tinta). Hover `#F7D877`, activo `#F9E3A0` |
+| `--nt-danger` / `--nt-danger-strong` | `#D9534F` / `#B3302C` | Rojo solo errores/destructivo; el texto/borde de rojo usa `-strong` |
+| `--nt-bg` | `#F4F8F5` | Fondo de la aplicación (menta muy pálido) |
+| `--nt-surface` | `#FFFFFF` | Tarjetas, topbar, tablas, placa del logo |
+| `--nt-border` | `#E2ECE5` | Bordes de tarjetas, tablas y separadores |
+| `--nt-border-input` | `#759286` | Borde de inputs/selects/checks (3.38:1 sobre blanco, WCAG 1.4.11) |
+| `--nt-text` / `--nt-text-muted` | `#1F3330` / `#546B64` | Texto principal / secundario y placeholders |
+| `--nt-primary-soft` | `#E3F2E8` | Fila seleccionada, hover de outline, chip, ítem activo del menú |
+| `--nt-primary-tint` | `#EEF7F1` | Hover de fila de tabla |
+| `--nt-table-head` | `#E4F2E9` | Encabezado de tabla (texto `--nt-ink`, peso 600) |
+| `--nt-success-soft` | `#DDF2E3` | Badge verde |
+| `--nt-accent-soft` | `#FDF0C0` | Badge amarillo/naranja |
+| `--nt-info-soft` / `--nt-info-text` | `#E3F4FB` / `#0B5070` | Badge azul y `alert-info` (fondo / texto) |
+| `--nt-danger-soft` | `#FBE3E2` | Badge rojo |
+| `--nt-heading` | `= --nt-ink` | `h1`-`h6` y títulos de tarjeta |
+| `--nt-radius` / `-control` / `-sm` | `1rem` / `0.625rem` / `0.5rem` | Tarjetas y modales / botones, inputs, alertas / botones `btn-sm` |
+| `--nt-sombra` | tinta al 5%, dos capas | Sombra tenue de tarjetas |
 
-Definirlos en `Web/src/index.css` y enlazarlos con Bootstrap sobrescribiendo sus variables (no usar colores sueltos en componentes):
+**Nombres semánticos conservados** (para no tocar los TSX): `--nt-success` = verde hoja (`--nt-leaf`); `--nt-success-strong/-hover/-active` = alias del primario y sus estados (el botón Guardar y el primario ahora comparten el verde profundo); `--nt-warning` = amarillo solar; clases `nt-card--azul` (franja azul cielo), `nt-card--naranja` (franja amarillo solar), `nt-card--verde` (franja verde hoja); `btn-accent` (amarillo, texto tinta); badges `nt-badge--naranja` (amarillo) y `--ambar` (crema), `--azul` (azul cielo). El nombre indica la **función**, no el matiz actual.
+
+Bloque `:root` (resumen; el completo y vigente está en `Web/src/index.css`):
 
 ```css
 :root {
-  --nt-navy: #0F2A5C;
-  --nt-primary: #1F5FD1;
-  --nt-accent: #F28C28;
-  --nt-success: #2E9E4F;
-  --nt-danger: #D9534F;
-  --nt-warning: #E0A100;
-  --nt-bg: #F1F5FC;
-  --nt-surface: #FFFFFF;
-  --nt-border: #E3E8F0;
-  --nt-text: #1B2740;
-  --nt-text-muted: #5B6A80;
-  /* + tintes y variantes (primary-soft, primary-tint, table-head, accent-soft, success-soft,
-     danger-soft, success-strong, danger-strong, accent-hover/active, heading): ver tabla de arriba */
+  --nt-ink: #183B3A;
+  --nt-primary: #167546;  --nt-primary-hover: #0F5E37;  --nt-primary-active: #0B4A2B;
+  --nt-leaf: #2EAA57;     --nt-sky: #79C7E8;
+  --nt-accent: #F4CC4E;   --nt-accent-hover: #F7D877;   --nt-accent-active: #F9E3A0;
+  --nt-danger: #D9534F;   --nt-danger-strong: #B3302C;  --nt-danger-soft: #FBE3E2;
+  --nt-bg: #F4F8F5;       --nt-surface: #FFFFFF;        --nt-border: #E2ECE5;  --nt-border-input: #759286;
+  --nt-text: #1F3330;     --nt-text-muted: #546B64;
+  --nt-primary-soft: #E3F2E8; --nt-primary-tint: #EEF7F1; --nt-table-head: #E4F2E9;
+  --nt-success-soft: #DDF2E3; --nt-accent-soft: #FDF0C0;  --nt-info-soft: #E3F4FB; --nt-info-text: #0B5070;
 
-  --bs-primary: var(--nt-primary);
-  --bs-primary-rgb: 31, 95, 209;
-  --bs-success: var(--nt-success);
-  --bs-success-rgb: 46, 158, 79;
-  --bs-danger: var(--nt-danger);
-  --bs-danger-rgb: 217, 83, 79;
-  --bs-warning: var(--nt-warning);
-  --bs-warning-rgb: 224, 161, 0;
-  --bs-body-bg: var(--nt-bg);
-  --bs-body-color: var(--nt-text);
-  --bs-border-color: var(--nt-border);
-  --bs-secondary-color: var(--nt-text-muted);
+  --bs-primary: var(--nt-primary);  --bs-primary-rgb: 22, 117, 70;
+  --bs-success: var(--nt-leaf);     --bs-info: var(--nt-sky);
+  --bs-warning: var(--nt-accent);   --bs-danger: var(--nt-danger);
+  --bs-body-bg: var(--nt-bg);       --bs-body-color: var(--nt-text);
+  --bs-link-color: var(--nt-primary);
+  --bs-border-radius: var(--nt-radius-control);
+  --bs-focus-ring-color: rgba(121, 199, 232, 0.45);
 }
 ```
 
-Nota: `.btn-primary`, `.btn-success`, `.btn-accent`, `.btn-outline-primary`, `.btn-outline-secondary` y `.btn-outline-danger` en Bootstrap 5.3 usa variables propias (`--bs-btn-bg`, etc.); definir una clase `.btn-primary` con esas variables en `index.css` para que el azul aplique a botones.
+Notas Bootstrap 5.3: los botones usan variables `--bs-btn-*`; `index.css` las reasigna en `.btn-primary/.btn-success` (idénticas), `.btn-accent`, `.btn-outline-primary/-secondary/-danger` y `.btn-secondary`. Sobrescrituras globales documentadas: `--bs-*` de `:root`, `.btn` (radio y peso 500), `.alert-info` (azul cielo), `.card`, `.modal`, `.form-control/.form-select/.form-check-input` (borde y foco), `h1-h6` (tinta, 700). `text-warning`/`bg-warning` ahora son amarillo claro: no usar `text-warning` (ilegible sobre blanco).
+
+**Foco por teclado**: `a`, `.btn`, `.form-check-input` y `[tabindex]` muestran contorno de 3px en `--nt-primary` con offset 2px (5.73:1 sobre blanco, 5.34:1 sobre el fondo); inputs: borde `--nt-primary` + anillo azul cielo; sidebar: contorno blanco 3px.
 
 ### 3.2 Badges de estado
 
-Píldora redondeada (`badge rounded-pill`) con **fondo suave + texto oscuro del mismo tono + borde fino**. Siempre con texto del estado (no solo color).
+Chip redondeado (`nt-badge`, punto decorativo + texto) con **fondo suave + texto oscuro del mismo tono + borde fino**. Siempre con el texto del estado (no solo color).
 
-| Tono | Fondo | Texto | Estados típicos |
-|---|---|---|---|
-| Ámbar | `#FFF3D6` | `#8A5A00` | Pendiente |
-| Azul | `#E4EDFB` | `#1F4FA8` | Programado, Enviado, Activo informativo |
-| Naranja | `#FDE8D3` | `#9A4F0A` | En proceso, Negociación |
-| Verde | `#DFF3E5` | `#1E6B36` | Completado, Aceptado, Activo |
-| Gris | `#ECEFF4` | `#4A566B` | Borrador, Inactivo |
-| Rojo | `#FBE3E2` | `#9C2B27` | Cancelado, Rechazado, Vencido |
+| Tono | Fondo | Texto | Borde | Estados típicos |
+|---|---|---|---|---|
+| Crema (`ambar`) | `#FFF8E1` | `#6F4B00` | `#EBD27F` | Pendiente |
+| Azul cielo (`azul`) | `#E3F4FB` | `#0B5070` | `#79C7E8` | Programado, Enviado, informativo |
+| Amarillo (`naranja`) | `#FDF0C0` | `#664A00` | `#F4CC4E` | En proceso, Negociación |
+| Verde (`verde`) | `#DDF2E3` | `#115C37` | `#9BD6AE` | Completado, Aceptado, Activo |
+| Gris | `#EDF1EE` | `#44554F` | `#CAD6CF` | Borrador, Inactivo |
+| Rojo | `#FBE3E2` | `#9C2B27` | `#F1B5B2` | Cancelado, Rechazado, Vencido |
 
-Adaptar los nombres al dominio de NutriTrack; mantener un mapa estado → tono centralizado (un único componente `BadgeEstado`).
+Mapa estado → tono centralizado en `BadgeEstado`.
 
 ### 3.3 Componentes (forma y color)
 
-- **Color de botón por función** (obligatorio; los colores salen solo de tokens):
+- **Color de botón por función** (obligatorio; solo tokens):
 
-| Función | Clase | Ejemplos |
-|---|---|---|
-| Crear / acción principal | `btn btn-primary` (azul sólido, `+ Nuevo ...`) | Nuevo, Filtrar, Nuevo Producto |
-| Selección / editar | `btn btn-outline-primary` | Editar |
-| Acción destacada o derivada | `btn btn-accent` (naranja, **texto navy**) | Nueva Medición, Tratamiento, Plan de Nutrición |
-| Guardar / confirmar | `btn btn-success` (verde `--nt-success-strong`, texto blanco) | Guardar, afirmativa de `ModalConfirmacion` |
-| Volver / Cerrar / paginación / negativa | `btn btn-outline-secondary` u `outline-primary` (outline azul) | Volver, Cerrar, Anterior/Siguiente, Omitir |
-| Eliminar | `btn btn-outline-danger` o ícono rojo (`--nt-danger-strong`) | Papelera de fila |
+| Función | Clase | Color actual | Ejemplos |
+|---|---|---|---|
+| Crear / acción principal | `btn btn-primary` | Verde profundo `#167546`, texto blanco | Nuevo, Filtrar, Nuevo Producto |
+| Guardar / confirmar | `btn btn-success` | Igual que el primario (verde profundo) | Guardar, afirmativa de `ModalConfirmacion` |
+| Selección / editar | `btn btn-outline-primary` | Outline verde profundo | Editar |
+| Acción destacada o derivada | `btn btn-accent` | Amarillo solar `#F4CC4E`, **texto tinta** | Nueva Medición, Tratamiento, Plan de Nutrición |
+| Volver / Cerrar / paginación / negativa | `btn btn-outline-secondary` u `outline-primary` | Outline verde profundo | Volver, Cerrar, Anterior/Siguiente, Omitir |
+| Eliminar | `btn btn-outline-danger` | Outline rojo `-strong`; hover rojo sólido con texto blanco | Papelera de fila |
 
-  Prohibido `btn-secondary` gris sólido (en `index.css` se neutraliza como outline azul). Esquinas ~6px.
-- **Tarjetas**: fondo `--nt-surface`, borde `--nt-border`, radio ~8px, sombra mínima, título en negrita color `--nt-heading` (navy) y **franja superior de 3px por función**: `.nt-card--azul` (datos, filtros, listados), `.nt-card--naranja` (plan, tratamiento, acciones derivadas), `.nt-card--verde` (resultados, captura de medición).
-- **Inputs**: borde `--nt-border`, radio ~6px, foco con anillo `--nt-primary`; buscador con ícono de lupa a la izquierda.
-- **Tablas**: encabezado `--nt-table-head` con texto `--nt-navy` en peso 600 y borde inferior `--nt-primary-soft` (aplicado a todo `.table > thead`; en tablas con scroll sigue sticky); filas con línea fina; hover `--nt-primary-tint`; **fila seleccionada** `table-primary` = fondo `--nt-primary-soft` + borde izquierdo azul 3px (además del radio seleccionado, no solo color); columna identificadora (Id) con `.nt-celda-id` (azul 600); estados con `BadgeEstado`; acciones por fila alineadas a la derecha.
-- **Tarjeta KPI**: ícono en cuadro pastel redondeado (tono según métrica), título, cifra grande, subtítulo en `--nt-text-muted`, variación porcentual en verde con flecha.
-- **Topbar**: borde inferior de 2px `--nt-primary-soft`. Enlaces "Ver todas" en azul.
-- **Tabs**: activa con texto y subrayado `--nt-primary`.
-- **Timeline de estado**: círculos conectados por línea; pasos completados en gris/azul suave, paso actual en `--nt-accent`.
+  **Por qué el primario es el verde profundo y no el verde hoja**: blanco sobre `#2EAA57` = 3.00:1 (falla AA para texto); sobre `#167546` = 5.73:1. El verde hoja queda para franjas e íconos. Prohibido `btn-secondary` gris sólido (se neutraliza como outline). Radio 10px (`btn-sm` 8px). Iconos SVG a la izquierda del texto (`Iconos.tsx`).
+- **Tarjetas**: superficie blanca, borde `--nt-border`, radio 16px, sombra tenue, título `h2.card-header.h6` en `--nt-heading` (700) y **franja superior de 4px por función**: `.nt-card--azul` (azul cielo: datos, filtros, listados), `.nt-card--naranja` (amarillo solar: acciones derivadas), `.nt-card--verde` (verde hoja: resultados, captura de medición).
+- **Inputs**: etiqueta visible en tinta, borde `--nt-border-input`, radio 10px, foco con borde verde profundo + anillo azul cielo; checks con `--nt-primary`.
+- **Tablas**: encabezado `--nt-table-head` (menta) con texto tinta 600 y borde inferior `--nt-primary-soft` (todo `.table > thead`; sticky en tablas con scroll); hover `--nt-primary-tint`; **fila seleccionada** `table-primary` = fondo `--nt-primary-soft` + borde izquierdo verde profundo 4px (más el radio seleccionado, no solo color); columna Id con `.nt-celda-id`; estados con `BadgeEstado`; acciones por fila a la derecha.
+- **Chip** `.nt-chip`: píldora menta con texto tinta (cantidad de resultados).
+- **Estado vacío** `.nt-vacio`: icono en círculo menta, título tinta y texto de ayuda con la siguiente acción.
+- **Alertas**: `alert-danger` Bootstrap; `alert-info` en azul cielo claro con texto `#0B5070`.
+- **Modales**: radio 16px, franja superior verde hoja, bordes `--nt-border`.
+- **Tarjeta KPI / timeline / tabs**: sin uso (no hay dashboard). Si se crean: cifra grande en tinta, amarillo para métricas destacadas, verde/azul para progreso.
 
-## 4. Layout de aplicación (objetivo)
-
-Estructura general de todas las pantallas:
+## 4. Layout de aplicación
 
 ```
-┌──────────┬──────────────────────────────────────────┐
-│ Sidebar  │ Topbar: ☰  [🔍 Buscador global]   Usuario ▾ │
-│ (navy)   ├──────────────────────────────────────────┤
-│ logo     │ Título (h1) + subtítulo        [+ Acción]│
-│ ítems    │                                          │
-│          │ Contenido en tarjetas sobre fondo claro  │
-│ ⚙ Config │                                          │
-└──────────┴──────────────────────────────────────────┘
+Escritorio (>= lg)                         Móvil (< lg)
++----------+-----------------------+       +----------------------------+
+| [placa   | Título (h1) + descrip.|       | menu  NutriTrack (topbar)  |
+|  logo]   |             [+ Acción]|       +----------------------------+
+| Clientes | Contenido en tarjetas |       | Contenido en tarjetas      |
+| Config   | sobre fondo menta     |       +----------------------------+
++----------+-----------------------+       (sidebar = offcanvas desde el menú)
 ```
 
-- **Sidebar**: fijo a la izquierda (~240px), fondo `--nt-navy`, texto claro. Arriba nombre/logo del sistema; ítems con ícono + texto; ítem activo con fondo `--nt-primary` y esquinas redondeadas; "Configuración" anclado abajo.
-- **Topbar**: fondo `--nt-surface` con borde inferior azul claro, botón hamburguesa, buscador global central (input redondeado con lupa), usuario a la derecha (avatar + nombre + menú).
-- **Encabezado de página**: `h1` con subtítulo gris debajo; acciones primarias a la derecha (`+ Nuevo …`). Opcional: fecha actual en chip a la derecha en dashboards.
-- **Dashboard**: fila de 4 tarjetas KPI; debajo dos tarjetas de tabla (p. ej. próximas acciones / recientes) con enlace "Ver todas".
-- **Listado**: fila de filtros (búsqueda + selects) sobre tarjeta con tabla; badges de estado; acciones por fila.
-- **Detalle**: enlace "← Volver", título + metadatos con íconos, botones de acción a la derecha, tabs (Resumen, …), tarjetas de información y de estado (timeline), tarjeta lateral de contacto/resumen.
-- **Formulario / documento con líneas**: datos generales arriba, tabla editable de líneas, panel de resumen lateral con totales (total en fondo `--nt-accent` suave), barra de acciones al pie (secundarias outline, principal azul, confirmar verde).
-- **Responsive**: bajo `lg` el sidebar colapsa tras la hamburguesa (offcanvas); tablas con `table-responsive`; KPIs pasan a 2 columnas y luego 1.
-- **Componente de layout**: `Web/src/components/LayoutApp.tsx` (sidebar + topbar + `<Outlet />`) usado como ruta padre en `App.tsx`.
-
-`LayoutApp` implementado (2026-10-11). Las pantallas ya no llevan `container py-4`: el área `.nt-contenido` aporta el padding.
+- **Sidebar**: fijo a la izquierda (240px), fondo verde profundo `--nt-primary` con el patrón de hojas (`patron-hojas-sidebar.jpg`, `background-size: cover`) y una capa degradada (`rgba(22,117,70,.25)` → `rgba(11,74,43,.35)`) que unifica el tono y garantiza el contraste. Arriba, el **logo completo dentro de una placa blanca redondeada** (`img` con `object-fit: contain`, proporción 700x200 preservada, sin recolorear, `alt="NutriTrack — Nutrition Software"`): el texto del logo es verde y no se lee sobre el verde del sidebar. Ítems con icono SVG + texto (`#EAF5EE`); ítem activo claro (fondo `--nt-primary-soft`, texto tinta, icono verde profundo); "Configuración" anclado abajo, `disabled` y con chip "Próximamente".
+- **Topbar**: clara (`--nt-surface`, borde inferior `--nt-border`), **solo móvil** (`d-lg-none`): hamburguesa + nombre del producto. Sin buscador ni usuario: eran placeholders sin función y no se presentan como controles activos; se reincorporan cuando existan (búsqueda global, autenticación).
+- **Encabezado de página**: `h1.h3` + descripción breve en `--nt-text-muted`; acción principal a la derecha.
+- **Listado**: encabezado + tarjeta de filtros/búsqueda + tarjeta de resultados con chip de cantidad, tabla limpia y paginación.
+- **Formulario / captura**: tarjetas por sección; barra de acciones al pie (Volver outline, Guardar verde profundo; derivadas en amarillo).
+- **Responsive**: bajo `lg` el sidebar es offcanvas (estado React, backdrop, Escape, `visibility` oculto cerrado); tablas en `table-responsive`; filtros apilados (`col-12 col-sm`).
+- **Dashboard futuro**: no implementado (no hay ruta). KPIs y actividad reciente solo si el producto incorpora esa pantalla.
+- **Componente de layout**: `Web/src/components/LayoutApp.tsx` (sidebar + topbar + `<Outlet />`) como ruta padre en `App.tsx`. El área `.nt-contenido` aporta el padding.
 
 ## 5. Patrones vigentes
 
 **Página**
-- Sin contenedor externo (lo da `LayoutApp`). Encabezado: `div.nt-encabezado` con `h1.h3.mb-0` + `p.nt-encabezado__subtitulo` (gris) y, a la derecha, la acción primaria (`btn btn-primary` con `+ ` en `span[aria-hidden]`). Las pantallas devuelven un fragmento `<>...</>`.
+- Sin contenedor externo (lo da `LayoutApp`). Encabezado: `div.nt-encabezado` con `h1.h3.mb-0` + `p.nt-encabezado__subtitulo` (descripción breve, muted) y, a la derecha, la acción primaria (`btn btn-primary` con `IconoMas`). Las pantallas devuelven un fragmento `<>...</>`.
 - Secciones agrupadas en `section.card.mb-3` con `card-header` (opcional) y `card-body`.
 
 **Formulario**
 - Grid dentro del `card-body`: `row g-3` con columnas `col-md-N`.
 - Cada campo: `label.form-label[htmlFor]` + `input.form-control` / `select.form-select` con `id` coincidente. Checkbox con `form-check`.
 - Campos calculados o de solo lectura: `disabled readOnly`.
-- Acciones al pie en `div.d-flex.gap-2`: Volver (`btn btn-outline-secondary`, con `←`) y Guardar (`btn btn-success`). Iconos decorativos en `span[aria-hidden="true"]`.
+- Acciones al pie en `div.d-flex.gap-2`: Volver (`btn btn-outline-secondary` con `IconoFlechaIzquierda`) y Guardar (`btn btn-success`).
 - Salir con cambios sin guardar: `window.confirm` con mensaje estándar.
 - Guardar con éxito: `navigate(ruta, { state: { mensaje } })`.
 
 **Listado**
-- Tarjeta de filtros (`row g-2`, botón `btn btn-primary`) + tarjeta de resultados.
-- `+ Nuevo` en el encabezado de página (`btn-primary`); sobre la tabla, Editar `btn btn-outline-primary` y Nueva Medición `btn btn-accent` (§3.3). Tabla dentro de `table-responsive`.
-- Tabla `table table-hover align-middle`; fila seleccionada `table-primary` (tinte azul + borde izquierdo); columna Activo con `BadgeEstado` ("Activo" verde / "Inactivo" gris, siempre con texto); selección con radio con `aria-label`.
-- Sin resultados: fila `text-center text-muted` ("Sin resultados.").
+- Tarjeta "Buscar clientes" (`row g-2`, botón `btn btn-primary` con `IconoLupa`) + tarjeta de resultados con `h2` y chip `.nt-chip` con la cantidad ("N resultados", `role="status"`).
+- `+ Nuevo` en el encabezado de página (`btn-primary`); sobre la tabla, Editar `btn btn-outline-primary` (`IconoEditar`) y Nueva Medición `btn btn-accent` (`IconoActividad`) (§3.3). Tabla dentro de `table-responsive`.
+- Tabla `table table-hover align-middle`; fila seleccionada `table-primary` (tinte verde + borde izquierdo); columna Activo con `BadgeEstado` ("Activo" verde / "Inactivo" gris, siempre con texto y punto decorativo); selección con radio con `aria-label`.
+- Cargando: fila con spinner y "Cargando..." (`role="status"`, derivado de `resultado === null`). Vacío: `.nt-vacio` con icono, título y ayuda distinta según haya o no filtros aplicados. Histórico de mediciones sin datos: "Aún no hay mediciones registradas para este cliente.".
 - Paginación: texto "Página X de Y (N clientes)" + `btn-group` Anterior/Siguiente `btn-outline-primary`, deshabilitados en los extremos.
 
 **Mensajes**
@@ -184,15 +173,18 @@ Estructura general de todas las pantallas:
 - Escape nunca cierra por sí solo: llama a `onSolicitarCierre` y el padre decide (Tratamiento aplica su validación; confirmaciones cancelan). Clic en el fondo no cierra.
 - Apilado (confirmación sobre Tratamiento): prop `superior` sube el z-index (`.nt-modal--superior`).
 - Confirmaciones de dos opciones con textos propios: `ModalConfirmacion` (Sí/No, Guardar/Omitir). Reemplaza `window.confirm` en pantallas nuevas.
-- Pie: acción secundaria `btn-outline-secondary` a la izquierda y principal a la derecha según función (§3.3: guardar/confirmar `btn-success`, crear `btn-primary`).
+- Pie: acción secundaria `btn-outline-secondary` a la izquierda y principal a la derecha según función (§3.3: guardar/confirmar `btn-success`, crear `btn-primary`). Los botones de fila solo-icono (papelera) llevan `aria-label` y `title`.
 
 **Tabla con encabezado fijo**
-- Contenedor `table-responsive nt-tabla-scroll` (altura = 11 × `--nt-fila-alto`: encabezado + 10 filas con `table-sm`, `overflow-y: auto`) y `thead th` con `position: sticky; top: 0`, fondo `--nt-table-head`, texto navy. Con `caption.visually-hidden` y fila vacía "Sin resultados.".
+- Contenedor `table-responsive nt-tabla-scroll` (altura = 11 × `--nt-fila-alto`: encabezado + 10 filas con `table-sm`, `overflow-y: auto`) y `thead th` con `position: sticky; top: 0`, fondo `--nt-table-head`, texto tinta. Con `caption.visually-hidden` y fila vacía con texto descriptivo.
 
 **Tabla de captura en una fila**
 - Cabeceras `th[scope=col]`, cada input con `aria-label` igual a su cabecera; campos no editables `disabled readOnly`; asterisco `.campo-obligatorio` en la cabecera.
 
 **Mensajes de acción**: en pantallas con barra de acciones al pie, los avisos/errores de guardado se muestran dentro de la tarjeta Acciones (junto al botón que los origina).
+
+**Iconos**
+- SVG inline en `Web/src/components/Iconos.tsx` (trazo `currentColor`, 24x24, `aria-hidden="true"` y `focusable="false"`): `IconoUsuarios`, `IconoAjustes`, `IconoMenu`, `IconoMas`, `IconoFlechaIzquierda`, `IconoLupa`, `IconoPapelera`, `IconoEditar`, `IconoActividad`, `IconoBandeja`. Clase `.nt-icono` (1.1em); en botones con texto se separa con margen automático. Sin emoji en la UI. El control que contiene solo un icono debe llevar `aria-label`.
 
 ## 6. Checklist de accesibilidad
 
@@ -245,47 +237,69 @@ Estructura general de todas las pantallas:
 | 2026-10-11 | `BadgeEstado` creado; columna Activo del listado pasa de checkbox deshabilitado a badge con texto | Mapa único estado -> tono; no transmitir solo por color; mismo dato | BadgeEstado, ListadoClientes |
 | 2026-10-11 | Guardar de cliente/medición y afirmativa de confirmaciones en verde; Tratamiento y Plan de Nutrición en naranja | Color por función (§3.3) | FormularioCliente, NuevaMedicion, ModalConfirmacion |
 | 2026-10-15 | Campo opcional Teléfono (`type="tel"`, `inputMode="tel"`, `maxLength=15`): el tecleo/pegado se filtra a dígitos y '+' solo en la primera posición, y se valida con `^\+?\d{7,15}$` antes de enviar (mensaje en la alerta global); listado con columna Teléfono entre Nombre y Email | Change `agregar-telefono-cliente`; filtrar al teclear evita errores y la validación cubre el largo mínimo | FormularioCliente, ListadoClientes, clienteService |
+| 2026-10-16 | Rediseño de marca según `docs/Propuesta-UI-UX/Ficha-diseno-NutriTrack.md`: paleta verde/azul cielo/amarillo/tinta reemplaza navy/azul/naranja; `--nt-navy` se renombra `--nt-ink` y `--nt-accent` pasa a amarillo; se mantienen los nombres de clase y tokens semánticos (`nt-card--azul`, `btn-accent`, `--nt-success`…) | La ficha es la nueva fuente de diseño; conservar nombres evita tocar TSX y no cambia comportamiento | Global |
+| 2026-10-16 | Primario/Guardar en verde profundo `#167546` y no en verde hoja `#2EAA57`; `btn-success` y `btn-primary` comparten color | Blanco sobre verde hoja = 3.00:1 (falla AA); sobre `#167546` = 5.73:1. El verde hoja queda decorativo | `index.css` |
+| 2026-10-16 | `btn-accent` amarillo solar con texto tinta (hover/activo más claros) | Tinta sobre `#F4CC4E` = 7.88:1; blanco sobre amarillo no cumple | `index.css` |
+| 2026-10-16 | Logo completo sobre placa blanca redondeada en el sidebar, sin recolorear, `object-fit: contain` | El texto del logo es verde y no se lee sobre el sidebar verde; la placa conserva la marca intacta | LayoutApp |
+| 2026-10-16 | Patrón de hojas reducido de 1024x1536 PNG (1.6 MB) a 512x768 JPEG q72 (13 KB) en `src/assets/`, con capa degradada encima | Peso de carga; la capa fija el peor caso de contraste del texto (blanco 6.04:1 sobre la hoja más clara) | `index.css`, assets |
+| 2026-10-16 | `NutriTrack-hojas.png` no se usa | Decisión del equipo | assets |
+| 2026-10-16 | Iconos SVG inline propios (`Iconos.tsx`) reemplazan todos los emoji y los `+`/`←` textuales; sin librería de iconos | Cero dependencias, trazo coherente, `aria-hidden` y color heredado | LayoutApp, ListadoClientes, FormularioCliente, NuevaMedicion, ModalTratamiento |
+| 2026-10-16 | Topbar solo móvil (hamburguesa + nombre), sin buscador global ni usuario; "Configuración" se conserva deshabilitado con chip "Próximamente" | Eran placeholders sin función; no deben parecer controles activos (ficha) | LayoutApp |
+| 2026-10-16 | Listado: tarjeta "Buscar clientes", chip con cantidad de resultados, estado de carga y estado vacío útil (texto distinto con/sin filtros) | Ficha: cantidad de resultados y estado vacío útil; el estándar exige cargando/vacío/error/éxito. Solo presentación (derivado de `resultado`/`aplicados`) | ListadoClientes |
+| 2026-10-16 | Bordes de input/checks `--nt-border-input` `#759286` (3.38:1) distinto del borde suave de tarjetas `--nt-border` | WCAG 1.4.11: el límite de un control necesita 3:1; `#E2ECE5` solo da ~1.2:1 | `index.css` |
+| 2026-10-16 | Foco visible global: contorno 3px verde profundo en enlaces/botones/checks; sidebar contorno blanco | >= 3:1 sobre fondos claros y sobre el sidebar | `index.css` |
+| 2026-10-16 | `alert-info` reasignado a azul cielo claro con texto `#0B5070`; `--bs-form-invalid-color` = `--nt-danger-strong` | Coherencia de marca y contraste AA del texto de error | `index.css` |
+| 2026-10-16 | Las filas anteriores de §8 que mencionan navy/azul/naranja/mockup quedan como historial; vale lo descrito en §3 y §4 | Evitar contradicciones sin borrar el registro | Documento |
 
-### Ratios de contraste calculados (WCAG 2.1, 2026-10-11)
+### Ratios de contraste calculados (WCAG 2.1, 2026-10-16)
 
-| Par (texto / fondo) | Ratio | AA (4.5:1) |
+Calculados con script (luminancia relativa WCAG). Umbrales: texto >= 4.5:1; UI/foco >= 3:1.
+
+| Par (texto / fondo) | Ratio | Criterio |
 |---|---|---|
-| Blanco / `--nt-primary` #1F5FD1 | 5.81 | sí |
-| Blanco / primary-hover #1A4FAF | 7.55 | sí |
-| Blanco / `--nt-success` #2E9E4F | 3.43 | **no** (no usar con texto blanco) |
-| Blanco / `--nt-success-strong` #237A3C | 5.36 | sí |
-| Blanco / success-hover #1E6532 | 7.09 | sí |
-| Blanco / `--nt-accent` #F28C28 | 2.45 | **no** (no usar) |
-| Navy #0F2A5C / `--nt-accent` | 5.68 | sí |
-| Navy / accent-hover #F5A04E | 6.65 | sí |
-| Navy / accent-active #F7B26E | 7.67 | sí |
-| Navy / `--nt-table-head` #E8F0FC | 12.15 | sí |
-| Navy / primary-tint #EEF4FD | 12.61 | sí |
-| `--nt-text` / primary-soft #E4EDFB | 12.62 | sí |
-| `--nt-primary` / primary-soft (hover outline, fila seleccionada) | 4.92 | sí |
-| `--nt-primary` / blanco | 5.81 | sí |
-| `--nt-primary` / bg #F1F5FC | 5.31 | sí |
-| `--nt-text-muted` #5B6A80 / blanco | 5.50 | sí |
-| `--nt-text-muted` / bg #F1F5FC | 5.03 | sí |
-| `--nt-danger-strong` #B3302C / blanco | 6.22 | sí |
-| Badges texto/fondo: verde 5.63, gris 6.43, naranja 5.05, azul 6.49, rojo 6.16 | >= 5.05 | sí |
-| Blanco / navy (sidebar) | 13.94 | sí |
+| Blanco / `--nt-primary` #167546 (btn primario, guardar) | 5.73 | AA texto |
+| Blanco / primary-hover #0F5E37 · active #0B4A2B | 7.85 · 10.35 | AA texto |
+| Blanco / `--nt-leaf` #2EAA57 | 3.00 | **no usar con texto**; solo decorativo |
+| Tinta #183B3A / `--nt-accent` #F4CC4E (btn-accent) | 7.88 | AA texto |
+| Tinta / accent-hover #F7D877 · active #F9E3A0 | 8.72 · 9.58 | AA texto |
+| `--nt-primary` / blanco (enlaces, outline) | 5.73 | AA texto |
+| `--nt-primary` / fondo #F4F8F5 | 5.34 | AA texto |
+| `--nt-primary` / primary-soft #E3F2E8 (Id en fila seleccionada, icono de chip) | 4.94 | AA texto |
+| primary-active #0B4A2B / primary-soft (hover outline) | 8.94 | AA texto |
+| `--nt-primary` / primary-tint #EEF7F1 (hover de fila) | 5.24 | AA texto |
+| Tinta / `--nt-table-head` #E4F2E9 | 10.53 | AA texto |
+| Tinta / blanco · / fondo | 12.17 · 11.35 | AA texto |
+| `--nt-text` #1F3330 / fondo · primary-soft · primary-tint | 12.44 · 11.52 · 12.20 | AA texto |
+| `--nt-text-muted` #546B64 / blanco · fondo · table-head · primary-soft | 5.73 · 5.35 · 4.96 · 4.95 | AA texto |
+| `--nt-danger-strong` #B3302C / blanco · fondo | 6.22 · 5.80 | AA texto |
+| Blanco / danger-strong (hover outline-danger) | 6.22 | AA texto |
+| `--nt-info-text` #0B5070 / info-soft #E3F4FB (alert-info, badge azul) | 7.76 | AA texto |
+| Badges texto/fondo: crema 7.37, azul 7.76, amarillo 7.23, verde 6.85, gris 6.93, rojo 6.16 | >= 6.16 | AA texto |
+| Blanco / sidebar, peor caso sobre la hoja más clara (#1E704B) | 6.04 | AA texto |
+| Texto de ítem `#EAF5EE` / sidebar peor caso | 5.41 | AA texto |
+| Blanco / ítem en hover (blanco 10%) sobre peor caso | 4.90 | AA texto |
+| Tinta / ítem activo (primary-soft) | 10.51 | AA texto |
+| "Configuración" deshabilitado `#B9D5C5` / sidebar peor caso | 3.81 | exento (control deshabilitado) |
+| Primario / blanco · fondo (contorno de foco, título de topbar) | 5.73 · 5.34 | UI >= 3 |
+| Foco blanco / sidebar peor caso | 6.04 | UI >= 3 |
+| `--nt-border-input` #759286 / blanco · fondo | 3.38 · 3.15 | UI >= 3 |
+| Verde hoja / blanco (franja decorativa) | 3.00 | UI >= 3 (decorativo) |
+| Azul cielo / blanco (franja decorativa) | 1.88 | solo decorativo; nunca único indicador (los badges llevan texto y borde) |
 
 ## 9. Deuda y pendientes de estandarización
 
-Resuelto (2026-10-11): tokens `--nt-*` y overrides `--bs-*` creados; plantilla Vite limpiada (`index.css`, `App.css` eliminado); `FormularioCliente` estandarizado; Guardar deshabilitado durante el envío; emoji `💾` retirado del formulario.
+Vigentes tras el rediseño (2026-10-16):
 
-- Confirmar hex oficiales. Contraste AA verificado en §8; falta calcular el badge ámbar (`#8A5A00` sobre `#FFF3D6`, aún sin uso) y el texto claro con opacidad sobre navy.
-Resuelto (2026-10-11, layout): `LayoutApp` implementado y pantallas de Cliente migradas; filtros ya no usan `flex-nowrap`; estilo inline de filas movido a clase CSS.
-
-Resuelto (2026-10-11, color): `BadgeEstado` creado y usado en `ListadoClientes`; botones por función, tablas y tarjetas con color aplicados.
-
-- Sin tarjeta KPI ni dashboard aún; `LayoutApp` conserva `btn-outline-secondary` en la hamburguesa (ahora outline azul).
-- Revisión visual manual pendiente en `npm run dev` (Ctrl+F5): `/clientes`, `/clientes/nuevo`, `/clientes/:id/mediciones/nueva` y modales.
-- `ListadoClientes`: fila clicable sin acceso por teclado (solo el radio es operable).
-- `LayoutApp`: sin atrapar foco dentro del offcanvas abierto; usuario/buscador/Configuración son placeholders; verificar contraste AA de texto claro sobre navy.
-- Emoji restantes en `ListadoClientes`: evaluar librería de iconos solo si se aprueba.
+- **Favicon propio pendiente**: se conserva `favicon.svg` de la plantilla Vite; no hay favicon compatible con la marca (preparar uno a partir del logo).
+- **Dashboard y tarjeta KPI**: futuros, sin implementar (no hay ruta). Reincorporar buscador global y usuario en la topbar cuando existan funcionalmente.
+- **Revisión visual manual pendiente** en `npm run dev` (Ctrl+F5): `/clientes`, `/clientes/nuevo`, `/clientes/:id/mediciones/nueva`, modales, sidebar escritorio y offcanvas móvil. Verificado solo por CSS y contraste calculado, sin navegador.
+- Texto de ítems sobre el patrón: calculado con el peor caso (hoja más clara); si se cambia el patrón o la capa, recalcular.
+- `FormularioCliente` y `NuevaMedicion`: **errores solo en alerta global**, sin mensaje junto al campo ni `aria-invalid`/`is-invalid` (la ficha lo pide; exige estado de validación por campo, es lógica nueva).
+- `ListadoClientes`: fila clicable sin acceso por teclado (solo el radio es operable); warning de lint preexistente `set-state-in-effect` (`cargar()` hace `setError(null)` síncrono; requiere refactor a hook de datos).
+- `LayoutApp`: sin atrapar foco dentro del offcanvas abierto.
 - `FormularioCliente` aún usa `window.confirm`; migrar a `ModalConfirmacion` (ya existe).
-- `NuevaMedicion`: errores de bloque solo en alerta global (sin `aria-invalid` en la tabla de captura); validar visualmente que el histórico muestra exactamente 10 filas (altura por `--nt-fila-alto` aproximada); iconos de papelera como emoji; sin aviso al cerrar la pestaña con cambios sin guardar; recargar la página tras guardar y volver a guardar da 409 (diseño actual).
-- `ListadoClientes` sin estado de carga (lint: warning `set-state-in-effect` en la línea 28, no trivial: `cargar()` hace `setError(null)` síncrono; requiere refactor a hook de datos).
-- `FormularioCliente`: errores de validación solo en alerta global; falta `aria-invalid`/feedback por campo.
+- `NuevaMedicion`: validar visualmente que el histórico muestra exactamente 10 filas (altura por `--nt-fila-alto` aproximada); sin aviso al cerrar la pestaña con cambios sin guardar; recargar tras guardar y volver a guardar da 409 (diseño actual).
+- Hex de marca tomados de la ficha; confirmar contra manual de marca si existe.
+
+Resuelto (2026-10-16): emoji sustituidos por SVG; placeholders de topbar retirados; estado de carga y vacío en el listado; contraste AA recalculado con la paleta nueva (incluido el sidebar sobre el patrón y los bordes de input).
+Resuelto (2026-10-11, histórico): tokens `--nt-*` y overrides `--bs-*`, plantilla Vite limpiada, `LayoutApp`, `BadgeEstado`, botones por función.

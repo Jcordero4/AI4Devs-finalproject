@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BadgeEstado from './BadgeEstado'
+import { IconoActividad, IconoBandeja, IconoEditar, IconoLupa, IconoMas } from './Iconos'
 import { listarClientes, type ClienteListado, type ResultadoPaginado } from '../services/clienteService'
 
 export default function ListadoClientes() {
@@ -51,6 +52,7 @@ export default function ListadoClientes() {
     navigate(`/clientes/${encodeURIComponent(seleccionado)}/mediciones/nueva`)
   }
 
+  const hayFiltros = aplicados.nombre !== '' || aplicados.id !== ''
   const totalPaginas = resultado ? Math.max(1, Math.ceil(resultado.total / resultado.tamanoPagina)) : 1
 
   return (
@@ -61,14 +63,14 @@ export default function ListadoClientes() {
           <p className="nt-encabezado__subtitulo">Consulta, filtra y administra los clientes registrados.</p>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => navigate('/clientes/nuevo')}>
-          <span aria-hidden="true">+ </span>Nuevo
+          <IconoMas />Nuevo
         </button>
       </div>
       {aviso && <div className="alert alert-info" role="alert">{aviso}</div>}
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
       <section className="card nt-card--azul mb-3">
-        <div className="card-header">Filtros</div>
+        <h2 className="card-header h6 mb-0">Buscar clientes</h2>
         <div className="card-body">
           <div className="row g-2 align-items-end">
             <div className="col-12 col-sm">
@@ -80,18 +82,25 @@ export default function ListadoClientes() {
               <input id="filtro-id" className="form-control" value={id} onChange={(e) => setId(e.target.value)} />
             </div>
             <div className="col-auto">
-              <button type="button" className="btn btn-primary" onClick={filtrar}>Filtrar</button>
+              <button type="button" className="btn btn-primary" onClick={filtrar}><IconoLupa />Filtrar</button>
             </div>
           </div>
         </div>
       </section>
 
       <section className="card nt-card--azul">
-        <div className="card-header">Clientes</div>
+        <div className="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <h2 className="h6 mb-0">Clientes</h2>
+          {resultado && (
+            <span className="nt-chip" role="status">
+              {resultado.total} {resultado.total === 1 ? 'resultado' : 'resultados'}
+            </span>
+          )}
+        </div>
         <div className="card-body">
           <div className="mb-2 d-flex flex-wrap gap-2">
-            <button type="button" className="btn btn-outline-primary" onClick={editar}>Editar</button>
-            <button type="button" className="btn btn-accent" onClick={nuevaMedicion}>Nueva Medición</button>
+            <button type="button" className="btn btn-outline-primary" onClick={editar}><IconoEditar />Editar</button>
+            <button type="button" className="btn btn-accent" onClick={nuevaMedicion}><IconoActividad />Nueva Medición</button>
           </div>
           <div className="table-responsive">
           <table className="table table-hover align-middle">
@@ -106,6 +115,14 @@ export default function ListadoClientes() {
               </tr>
             </thead>
             <tbody>
+              {!resultado && !error && (
+                <tr>
+                  <td colSpan={6} className="text-center text-muted" role="status">
+                    <span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />
+                    Cargando...
+                  </td>
+                </tr>
+              )}
               {resultado?.items.map((c) => (
                 <tr
                   key={c.id}
@@ -126,7 +143,21 @@ export default function ListadoClientes() {
                 </tr>
               ))}
               {resultado?.items.length === 0 && (
-                <tr><td colSpan={6} className="text-center text-muted">Sin resultados.</td></tr>
+                <tr>
+                  <td colSpan={6}>
+                    <div className="nt-vacio">
+                      <span className="nt-vacio__icono"><IconoBandeja /></span>
+                      <p className="nt-vacio__titulo">
+                        {hayFiltros ? 'No se encontraron clientes con esos filtros.' : 'Aún no hay clientes registrados.'}
+                      </p>
+                      <p className="nt-vacio__texto">
+                        {hayFiltros
+                          ? 'Revisa el nombre o el Id, o deja los campos vacíos y pulsa Filtrar para ver todos los clientes.'
+                          : 'Usa el botón Nuevo para registrar al primer cliente.'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
