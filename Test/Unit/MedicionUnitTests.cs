@@ -109,8 +109,19 @@ public class MedicionUnitTests
         public Task<bool> ExisteAsync(string clienteId, DateOnly fecha, CancellationToken ct = default) =>
             Task.FromResult(Datos.Any(m => m.ClienteId == clienteId && m.FechaMedicion == fecha));
 
-        public Task<IReadOnlyList<Medicion>> ListarAsync(string clienteId, CancellationToken ct = default) =>
-            Task.FromResult<IReadOnlyList<Medicion>>(Datos.Where(m => m.ClienteId == clienteId).ToList());
+        public int Consultas { get; private set; }
+        public DateOnly? UltimoDesde { get; private set; }
+        public DateOnly? UltimoHasta { get; private set; }
+
+        public Task<IReadOnlyList<Medicion>> ListarAsync(string clienteId, DateOnly? desde = null, DateOnly? hasta = null, CancellationToken ct = default)
+        {
+            Consultas++;
+            UltimoDesde = desde;
+            UltimoHasta = hasta;
+            return Task.FromResult<IReadOnlyList<Medicion>>(Datos
+                .Where(m => m.ClienteId == clienteId && (desde is null || m.FechaMedicion >= desde) && (hasta is null || m.FechaMedicion <= hasta))
+                .ToList());
+        }
 
         public Task<Medicion?> ObtenerAsync(string clienteId, DateOnly fecha, CancellationToken ct = default) =>
             Task.FromResult(Datos.FirstOrDefault(m => m.ClienteId == clienteId && m.FechaMedicion == fecha));
@@ -223,4 +234,69 @@ public class MedicionUnitTests
 
         Assert.Equal([Hoy, Hoy.AddDays(-3), Hoy.AddDays(-10)], lista.Select(m => m.FechaMedicion));
     }
+
+    private static RepoMedicionFalso RepoConHistorial()
+    {
+        var repo = new RepoMedicionFalso();
+        foreach (var dias in new[] { -40, -20, -10, -5, 0 })
+            repo.Datos.Add(new Medicion { ClienteId = "C1", FechaMedicion = Hoy.AddDays(dias) });
+        return repo;
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_ConRango_PasaLosExtremosAlRepositorioYFiltraInclusivo()
+    {
+        var repo = RepoConHistorial();
+
+        var lista = await CrearServicio(repo).ListarAsync("C1", Hoy.AddDays(-20), Hoy.AddDays(-5));
+
+        Assert.Equal(Hoy.AddDays(-20), repo.UltimoDesde);
+        Assert.Equal(Hoy.AddDays(-5), repo.UltimoHasta);
+        Assert.Equal([Hoy.AddDays(-5), Hoy.AddDays(-10), Hoy.AddDays(-20)], lista.Select(m => m.FechaMedicion));
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_RangoDeUnSoloDia_ConExtremosIguales()
+    {
+        var lista = await CrearServicio(RepoConHistorial()).ListarAsync("C1", Hoy.AddDays(-10), Hoy.AddDays(-10));
+
+        Assert.Equal([Hoy.AddDays(-10)], lista.Select(m => m.FechaMedicion));
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_ConUnSoloExtremo_FiltraSoloPorEse()
+    {
+        var servicio = CrearServicio(RepoConHistorial());
+
+        var soloDesde = await servicio.ListarAsync("C1", desde: Hoy.AddDays(-10));
+        var soloHasta = await servicio.ListarAsync("C1", hasta: Hoy.AddDays(-20));
+
+        Assert.Equal([Hoy, Hoy.AddDays(-5), Hoy.AddDays(-10)], soloDesde.Select(m => m.FechaMedicion));
+        Assert.Equal([Hoy.AddDays(-20), Hoy.AddDays(-40)], soloHasta.Select(m => m.FechaMedicion));
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_RangoSinMediciones_DevuelveVacio()
+    {
+        var lista = await CrearServicio(RepoConHistorial()).ListarAsync("C1", Hoy.AddDays(-100), Hoy.AddDays(-90));
+
+        Assert.Empty(lista);
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_RangoInvertido_LanzaValidacionYNoConsulta()
+    {
+        var repo = RepoConHistorial();
+
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            CrearServicio(repo).ListarAsync("C1", Hoy, Hoy.AddDays(-1)));
+
+        Assert.Contains(ex.Errors, e => e.PropertyName == "desde");
+        Assert.Equal(0, repo.Consultas);
+    }
+
+    [Fact]
+    public async Task Servicio_Listar_ClienteInexistente_Lanza404AunConRangoInvertido() =>
+        await Assert.ThrowsAsync<NoEncontradoException>(() =>
+            CrearServicio(new RepoMedicionFalso()).ListarAsync("NO", Hoy, Hoy.AddDays(-1)));
 }

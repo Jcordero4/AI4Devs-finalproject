@@ -47,6 +47,7 @@ La solución se basa en el siguiente conjunto de tecnologías:
 - MySQL 8 — Motor de base de datos relacional
 - React 19 + TypeScript + Vite — HTML5 / CSS3 / TypeScript (ES2022) — Interfaz de usuario frontend responsiva (SPA).
 - Bootstrap 5.3.8 (solo CSS) — Estilos y componentes visuales.
+- jsPDF + jspdf-autotable — Generación y descarga del PDF del historial de progreso en el navegador (carga diferida, sin enviar datos a un servidor externo).
 - xUnit — Pruebas unitarias y de integración (.NET).
 
 ### **1.5 URL del repositorio**

@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.Results;
 using NutriTrack.Application.DTOs;
 using NutriTrack.Application.Excepciones;
 using NutriTrack.Application.Interfaces;
@@ -11,10 +12,12 @@ public class ServicioMedicion(
     IRepositorioCliente repositorioCliente,
     IValidator<GuardarMedicionDto> validador)
 {
-    public async Task<IReadOnlyList<MedicionResumenDto>> ListarAsync(string clienteId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<MedicionResumenDto>> ListarAsync(string clienteId, DateOnly? desde = null, DateOnly? hasta = null, CancellationToken ct = default)
     {
         await AsegurarClienteAsync(clienteId, ct);
-        var mediciones = await repositorio.ListarAsync(clienteId, ct);
+        if (desde > hasta)
+            throw new ValidationException([new ValidationFailure("desde", "La fecha inicial no puede ser posterior a la fecha final.")]);
+        var mediciones = await repositorio.ListarAsync(clienteId, desde, hasta, ct);
         return mediciones
             .OrderByDescending(m => m.FechaMedicion)
             .Select(m => new MedicionResumenDto(m.FechaMedicion, m.Peso, m.Grasa, m.MasaMuscular, m.Agua, m.GrasaVisceral, m.Imc))

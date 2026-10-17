@@ -10,9 +10,10 @@ public class MedicionController(ServicioMedicion servicio) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IReadOnlyList<MedicionResumenDto>>> Listar(string clienteId, CancellationToken ct) =>
-        Ok(await servicio.ListarAsync(clienteId, ct));
+    public async Task<ActionResult<IReadOnlyList<MedicionResumenDto>>> Listar(string clienteId, [FromQuery] DateOnly? desde, [FromQuery] DateOnly? hasta, CancellationToken ct) =>
+        Ok(await servicio.ListarAsync(clienteId, desde, hasta, ct));
 
     [HttpGet("{fecha}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

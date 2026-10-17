@@ -546,6 +546,78 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
+/* Gráfico de peso (SVG propio, GraficoPeso.tsx): solo tokens --nt-* */
+.nt-grafico {
+  width: 100%;
+}
+
+.nt-grafico__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.nt-grafico--vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 560 / 320;
+  border: 1px dashed var(--nt-border-input);
+  border-radius: var(--nt-radius-control);
+  background-color: var(--nt-surface);
+  color: var(--nt-text-muted);
+}
+
+.nt-grafico__rejilla {
+  stroke: var(--nt-border);
+  stroke-width: 1;
+}
+
+.nt-grafico__eje {
+  stroke: var(--nt-border-input);
+  stroke-width: 1;
+}
+
+.nt-grafico__etiqueta {
+  fill: var(--nt-text-muted);
+  font-size: 12px;
+}
+
+.nt-grafico__linea {
+  fill: none;
+  stroke: var(--nt-primary);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.nt-grafico__nodo {
+  fill: var(--nt-surface);
+  stroke: var(--nt-primary);
+  stroke-width: 2.5;
+  cursor: pointer;
+}
+
+.nt-grafico__nodo:hover,
+.nt-grafico__nodo:focus-visible {
+  fill: var(--nt-primary);
+}
+
+.nt-grafico__nodo:focus-visible {
+  outline: 3px solid var(--nt-primary);
+  outline-offset: 3px;
+}
+
+.nt-grafico__tooltip rect {
+  fill: var(--nt-ink);
+}
+
+.nt-grafico__tooltip text {
+  fill: var(--nt-surface);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 /* Modales apilados (docs/estandarUI-UX.md §5): el segundo se dibuja sobre el primero */
 .nt-modal-fondo--superior {
   --bs-backdrop-zindex: 1060;

@@ -138,6 +138,94 @@ public class MedicionApiTests : IClassFixture<ClienteApiTests.Fabrica>
         Assert.Equal([Hoy, Hoy.AddDays(-5), Hoy.AddDays(-20), Hoy.AddDays(-40)], lista!.Select(m => m.FechaMedicion));
     }
 
+    private async Task<string> CrearClienteConHistorialAsync(string id)
+    {
+        await CrearClienteAsync(id);
+        using var scope = _fabrica.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<NutriTrackDbContext>();
+        foreach (var dias in new[] { -40, -20, -10, -5, 0 })
+        {
+            db.Set<Medicion>().Add(new Medicion { ClienteId = id, FechaMedicion = Hoy.AddDays(dias), Peso = 70 + dias });
+        }
+        await db.SaveChangesAsync();
+        return id;
+    }
+
+    private static string Fecha(int dias) => Hoy.AddDays(dias).ToString("yyyy-MM-dd");
+
+    [Fact]
+    public async Task Historico_SinParametros_DevuelveTodo()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG-TODO");
+
+        var lista = await _http.GetFromJsonAsync<List<MedicionResumenDto>>(Ruta(id));
+
+        Assert.Equal(5, lista!.Count);
+    }
+
+    [Fact]
+    public async Task Historico_ConRango_DevuelveSoloElRangoInclusivoOrdenado()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG");
+
+        var lista = await _http.GetFromJsonAsync<List<MedicionResumenDto>>($"{Ruta(id)}?desde={Fecha(-20)}&hasta={Fecha(-5)}");
+
+        Assert.Equal([Hoy.AddDays(-5), Hoy.AddDays(-10), Hoy.AddDays(-20)], lista!.Select(m => m.FechaMedicion));
+    }
+
+    [Fact]
+    public async Task Historico_ConUnSoloExtremo_FiltraPorEseExtremo()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG-UNO");
+
+        var soloDesde = await _http.GetFromJsonAsync<List<MedicionResumenDto>>($"{Ruta(id)}?desde={Fecha(-10)}");
+        var soloHasta = await _http.GetFromJsonAsync<List<MedicionResumenDto>>($"{Ruta(id)}?hasta={Fecha(-20)}");
+
+        Assert.Equal([Hoy, Hoy.AddDays(-5), Hoy.AddDays(-10)], soloDesde!.Select(m => m.FechaMedicion));
+        Assert.Equal([Hoy.AddDays(-20), Hoy.AddDays(-40)], soloHasta!.Select(m => m.FechaMedicion));
+    }
+
+    [Fact]
+    public async Task Historico_RangoSinMediciones_Devuelve200ConArregloVacio()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG-VACIO");
+
+        var respuesta = await _http.GetAsync($"{Ruta(id)}?desde={Fecha(-100)}&hasta={Fecha(-90)}");
+
+        Assert.Equal(HttpStatusCode.OK, respuesta.StatusCode);
+        Assert.Empty((await respuesta.Content.ReadFromJsonAsync<List<MedicionResumenDto>>())!);
+    }
+
+    [Fact]
+    public async Task Historico_RangoInvertido_Devuelve400ConErrorEnDesde()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG-INV");
+
+        var respuesta = await _http.GetAsync($"{Ruta(id)}?desde={Fecha(0)}&hasta={Fecha(-5)}");
+
+        Assert.Equal(HttpStatusCode.BadRequest, respuesta.StatusCode);
+        Assert.Equal("application/problem+json", respuesta.Content.Headers.ContentType?.MediaType);
+        Assert.Contains("\"desde\"", await respuesta.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task Historico_FechaConFormatoInvalido_Devuelve400()
+    {
+        var id = await CrearClienteConHistorialAsync("M-RNG-FMT");
+
+        var respuesta = await _http.GetAsync($"{Ruta(id)}?desde=ayer");
+
+        Assert.Equal(HttpStatusCode.BadRequest, respuesta.StatusCode);
+    }
+
+    [Fact]
+    public async Task Historico_ClienteInexistenteConRango_Devuelve404()
+    {
+        var respuesta = await _http.GetAsync($"{Ruta("NO-EXISTE")}?desde={Fecha(-5)}&hasta={Fecha(0)}");
+
+        Assert.Equal(HttpStatusCode.NotFound, respuesta.StatusCode);
+    }
+
     [Fact]
     public async Task Historico_ClienteInexistente_Devuelve404()
     {

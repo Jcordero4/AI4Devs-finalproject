@@ -60,7 +60,7 @@ El sistema SHALL actualizar la misma medición, en lugar de crear una nueva, cua
 - **THEN** la API rechaza la solicitud y el registro permanece sin cambios
 
 ### Requirement: Histórico de mediciones del cliente
-El sistema SHALL mostrar el histórico de mediciones del cliente con las mismas columnas de captura (Fecha, Peso, % Grasa, M. Muscular, % Agua, G. Visceral, IMC), ordenado de la fecha más reciente a la más antigua, cargando todos los registros pero mostrando 10 visibles, con scroll para el resto y encabezado fijo durante el scroll.
+El sistema SHALL mostrar el histórico de mediciones del cliente con las mismas columnas de captura (Fecha, Peso, % Grasa, M. Muscular, % Agua, G. Visceral, IMC), ordenado de la fecha más reciente a la más antigua, cargando todos los registros pero mostrando 10 visibles, con scroll para el resto y encabezado fijo durante el scroll. La consulta `GET /api/clientes/{clienteId}/mediciones` SHALL admitir los parámetros opcionales `desde` y `hasta` (`yyyy-MM-dd`) para limitar el resultado a un rango de fechas, ambos extremos incluidos; sin parámetros devuelve todas las mediciones.
 
 #### Scenario: Histórico con más de 10 registros
 - **GIVEN** el cliente tiene más de 10 mediciones
@@ -76,6 +76,28 @@ El sistema SHALL mostrar el histórico de mediciones del cliente con las mismas 
 - **GIVEN** existe una medición del cliente en una fecha dada
 - **WHEN** se consulta `GET /api/clientes/{clienteId}/mediciones/{fecha}`
 - **THEN** la API responde 200 con la medición, sus tratamientos y su plan nutricional; si no existe, responde 404
+
+#### Scenario: Consulta con rango de fechas
+- **GIVEN** el cliente tiene mediciones dentro y fuera de un rango
+- **WHEN** se consulta `GET /api/clientes/{clienteId}/mediciones?desde=2026-10-01&hasta=2026-10-31`
+- **THEN** la API responde 200 solo con las mediciones cuya fecha está entre `desde` y `hasta` inclusive, ordenadas de la más reciente a la más antigua
+
+#### Scenario: Rango con un solo extremo
+- **WHEN** se consulta con solo `desde` o solo `hasta`
+- **THEN** la API responde 200 filtrando únicamente por el extremo indicado
+
+#### Scenario: Rango sin mediciones
+- **GIVEN** el cliente no tiene mediciones dentro del rango
+- **WHEN** se consulta con `desde` y `hasta`
+- **THEN** la API responde 200 con un arreglo vacío
+
+#### Scenario: Rango invertido
+- **WHEN** se consulta con `desde` posterior a `hasta`
+- **THEN** la API responde 400 con el error de rango de fechas inválido y no devuelve datos
+
+#### Scenario: Cliente inexistente con rango
+- **WHEN** se consulta el histórico con o sin rango de un cliente que no existe
+- **THEN** la API responde 404
 
 ### Requirement: Tratamiento de la medición
 El sistema SHALL permitir capturar cero o más filas de tratamiento (Producto hasta 50 caracteres, Dosis hasta 150 caracteres, ambos obligatorios) en un modal "Tratamiento". Cada fila SHALL almacenarse con una Secuencia entera autoincremental por medición, asociada al mismo Id de la medición.

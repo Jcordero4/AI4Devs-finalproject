@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BadgeEstado from './BadgeEstado'
-import { IconoActividad, IconoBandeja, IconoEditar, IconoLupa, IconoMas } from './Iconos'
+import { IconoActividad, IconoBandeja, IconoEditar, IconoHistorial, IconoLupa, IconoMas } from './Iconos'
 import { listarClientes, type ClienteListado, type ResultadoPaginado } from '../services/clienteService'
 
 export default function ListadoClientes() {
@@ -50,6 +50,14 @@ export default function ListadoClientes() {
       return
     }
     navigate(`/clientes/${encodeURIComponent(seleccionado)}/mediciones/nueva`)
+  }
+
+  const historial = () => {
+    if (!seleccionado) {
+      setAviso('Debe seleccionar el cliente cuyo historial desea consultar.')
+      return
+    }
+    navigate(`/clientes/${encodeURIComponent(seleccionado)}/historial`)
   }
 
   const hayFiltros = aplicados.nombre !== '' || aplicados.id !== ''
@@ -101,6 +109,7 @@ export default function ListadoClientes() {
           <div className="mb-2 d-flex flex-wrap gap-2">
             <button type="button" className="btn btn-outline-primary" onClick={editar}><IconoEditar />Editar</button>
             <button type="button" className="btn btn-accent" onClick={nuevaMedicion}><IconoActividad />Nueva Medición</button>
+            <button type="button" className="btn btn-outline-primary" onClick={historial}><IconoHistorial />Historial</button>
           </div>
           <div className="table-responsive">
           <table className="table table-hover align-middle">

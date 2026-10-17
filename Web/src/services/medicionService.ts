@@ -50,7 +50,14 @@ export interface DatosMedicion {
 
 const rutaMediciones = (clienteId: string) => `/api/clientes/${encodeURIComponent(clienteId)}/mediciones`
 
-export const listarMediciones = (clienteId: string) => apiFetch<MedicionResumen[]>(rutaMediciones(clienteId))
+/** Histórico del cliente (de la más reciente a la más antigua); `desde`/`hasta` ('yyyy-MM-dd', inclusivos) son opcionales. */
+export function listarMediciones(clienteId: string, desde?: string, hasta?: string) {
+  const params = new URLSearchParams()
+  if (desde) params.set('desde', desde)
+  if (hasta) params.set('hasta', hasta)
+  const consulta = params.toString()
+  return apiFetch<MedicionResumen[]>(`${rutaMediciones(clienteId)}${consulta ? `?${consulta}` : ''}`)
+}
 
 export const obtenerMedicion = (clienteId: string, fecha: string) =>
   apiFetch<Medicion>(`${rutaMediciones(clienteId)}/${encodeURIComponent(fecha)}`)

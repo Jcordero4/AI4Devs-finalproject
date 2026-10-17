@@ -22,7 +22,7 @@ El sistema SHALL listar clientes ordenados alfabéticamente por Nombre, paginado
 - **THEN** el listado muestra solo los clientes que coinciden con el criterio
 
 ### Requirement: Selección de fila y navegación desde el listado
-El sistema SHALL permitir seleccionar una sola fila a la vez, marcando su radio button y resaltándola, y SHALL ofrecer los botones "Nuevo", "Editar" y "Nueva Medición".
+El sistema SHALL permitir seleccionar una sola fila a la vez, marcando su radio button y resaltándola, y SHALL ofrecer los botones "Nuevo", "Editar", "Nueva Medición" e "Historial".
 
 #### Scenario: Seleccionar fila
 - **WHEN** el usuario hace clic en cualquier parte de una fila
@@ -49,6 +49,16 @@ El sistema SHALL permitir seleccionar una sola fila a la vez, marcando su radio 
 - **GIVEN** hay un cliente seleccionado
 - **WHEN** el usuario presiona "Nueva Medición"
 - **THEN** se navega a la pantalla de Nueva Medición de ese cliente
+
+#### Scenario: Historial sin selección
+- **GIVEN** ningún cliente está seleccionado
+- **WHEN** el usuario presiona "Historial"
+- **THEN** se muestra "Debe seleccionar el cliente cuyo historial desea consultar." y no se navega
+
+#### Scenario: Historial con selección
+- **GIVEN** hay un cliente seleccionado
+- **WHEN** el usuario presiona "Historial"
+- **THEN** se navega a la pantalla de Historial de ese cliente
 
 ### Requirement: Alta de cliente
 El sistema SHALL crear un cliente cuando Id, Nombre, FechaNacimiento, Genero (M/F) y Altura (> 0) son válidos, asignando FechaIngreso = fecha actual y Activo = true. Telefono y Email son opcionales; si se ingresan, SHALL cumplir su formato.

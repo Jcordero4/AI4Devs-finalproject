@@ -11,11 +11,13 @@ public class RepositorioMedicion(NutriTrackDbContext db) : IRepositorioMedicion
     public Task<bool> ExisteAsync(string clienteId, DateOnly fecha, CancellationToken ct = default) =>
         db.Set<Medicion>().AnyAsync(m => m.ClienteId == clienteId && m.FechaMedicion == fecha, ct);
 
-    public async Task<IReadOnlyList<Medicion>> ListarAsync(string clienteId, CancellationToken ct = default) =>
-        await db.Set<Medicion>().AsNoTracking()
-            .Where(m => m.ClienteId == clienteId)
-            .OrderByDescending(m => m.FechaMedicion)
-            .ToListAsync(ct);
+    public async Task<IReadOnlyList<Medicion>> ListarAsync(string clienteId, DateOnly? desde = null, DateOnly? hasta = null, CancellationToken ct = default)
+    {
+        var consulta = db.Set<Medicion>().AsNoTracking().Where(m => m.ClienteId == clienteId);
+        if (desde is { } inicio) consulta = consulta.Where(m => m.FechaMedicion >= inicio);
+        if (hasta is { } fin) consulta = consulta.Where(m => m.FechaMedicion <= fin);
+        return await consulta.OrderByDescending(m => m.FechaMedicion).ToListAsync(ct);
+    }
 
     public Task<Medicion?> ObtenerAsync(string clienteId, DateOnly fecha, CancellationToken ct = default) =>
         db.Set<Medicion>()

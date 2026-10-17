@@ -83,6 +83,14 @@ export const IconoActividad = (p: IconoProps) => (
   </Icono>
 )
 
+export const IconoHistorial = (p: IconoProps) => (
+  <Icono {...p}>
+    <path d="M3 3v5h5" />
+    <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+    <path d="M12 7v5l4 2" />
+  </Icono>
+)
+
 export const IconoBandeja = (p: IconoProps) => (
   <Icono {...p}>
     <path d="M22 12h-6l-2 3h-4l-2-3H2" />

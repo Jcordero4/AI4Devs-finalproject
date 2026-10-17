@@ -110,12 +110,12 @@ Basado en `docs/US-008-Medicion-Composicion-Corporal.md` y `docs/US-009-Historia
 
 | Método | Ruta | Descripción | US | Status | Respuesta |
 |---|---|---|---|---|---|
-| GET | `/api/clientes/{clienteId}/mediciones` | Histórico de mediciones del cliente, ordenado de más reciente a más antigua. Admite `desde` y `hasta` (query string) para el filtro de rango de fechas. | US-008 (tabla histórico), US-009 | 200 / 404 | JSON arreglo de `MedicionResumenDto` |
+| GET | `/api/clientes/{clienteId}/mediciones` | Histórico de mediciones del cliente, ordenado de más reciente a más antigua. Admite los parámetros opcionales `desde` y `hasta` (query string, `yyyy-MM-dd`, ambos inclusivos y combinables o por separado) para el filtro de rango de fechas. | US-008 (tabla histórico), US-009 | 200 / 400 (rango invertido o fecha inválida) / 404 | JSON arreglo de `MedicionResumenDto` |
 | GET | `/api/clientes/{clienteId}/mediciones/{fecha}` | Detalle de una medición puntual, incluyendo sus tratamientos y su plan nutricional. `fecha` en formato `yyyy-MM-dd`. | US-008 | 200 / 404 | JSON `MedicionDto` |
 | POST | `/api/clientes/{clienteId}/mediciones` | Crea una medición nueva (Fecha = hoy) junto con sus tratamientos y su plan nutricional, en un único guardado. | US-008 | 201 (+ `Location` al GET por fecha) / 400 / 404 / 409 | JSON `MedicionDto` |
 | PUT | `/api/clientes/{clienteId}/mediciones/{fecha}` | Actualiza la medición del día completa (medición + tratamientos + plan nutricional) mientras la bandera de "ya guardado" siga activa en la misma sesión. | US-008 | 200 / 400 / 404 / 409 | JSON `MedicionDto` |
 
-> **Discrepancia:** el controller actual (`API/Controllers/MedicionController.cs`) aún no implementa los parámetros `desde` / `hasta` del listado.
+> **Filtro por rango (US-009):** `desde` y `hasta` son opcionales; sin ellos devuelve todo el histórico. Si `desde` es posterior a `hasta` responde 400 (`application/problem+json` con `errors.desde`: "La fecha inicial no puede ser posterior a la fecha final."); una fecha con formato inválido también responde 400, y un cliente inexistente responde 404 (se valida antes que el rango). Un rango sin mediciones responde 200 con `[]`.
 
 **Ejemplo `GET .../mediciones`** (200, `MedicionResumenDto[]`; arreglo en la raíz, sin envoltorio):
 

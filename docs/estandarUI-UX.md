@@ -13,11 +13,11 @@ Precedencia: `openspec/specs/` define comportamiento; `README.md` define stack; 
 
 ## 2. Estructura y convenciones
 
-- `Web/src/components/`: componentes y pantallas (`PascalCase.tsx`, export default). Hoy: `LayoutApp.tsx` (sidebar + topbar + `<Outlet />`, ruta padre), `ListadoClientes.tsx`, `FormularioCliente.tsx`, `NuevaMedicion.tsx` y los modales `ModalBase.tsx` (base reutilizable), `ModalConfirmacion.tsx`, `ModalTratamiento.tsx`, `ModalPlanNutricion.tsx`; `BadgeEstado.tsx` (mapa estado -> tono, §3.2) e `Iconos.tsx` (iconos SVG, §5).
-- `Web/src/hooks/`: hooks reutilizables (`useDatosMedicion`: cliente + histórico de mediciones).
-- `Web/src/utils/`: lógica pura de formulario sin React (`medicionFormulario.ts`: tipos de captura, validación por bloques, formato de fecha).
+- `Web/src/components/`: componentes y pantallas (`PascalCase.tsx`, export default). Hoy: `LayoutApp.tsx` (sidebar + topbar + `<Outlet />`, ruta padre), `ListadoClientes.tsx`, `FormularioCliente.tsx`, `NuevaMedicion.tsx`, `HistorialCliente.tsx` (consulta de progreso), `GraficoPeso.tsx` (gráfico SVG propio) y los modales `ModalBase.tsx` (base reutilizable), `ModalConfirmacion.tsx`, `ModalTratamiento.tsx`, `ModalPlanNutricion.tsx`; `BadgeEstado.tsx` (mapa estado -> tono, §3.2) e `Iconos.tsx` (iconos SVG, §5).
+- `Web/src/hooks/`: hooks reutilizables (`useDatosMedicion`: cliente + histórico de mediciones; `useCliente`: cliente por Id).
+- `Web/src/utils/`: lógica pura de formulario sin React (`medicionFormulario.ts`: tipos de captura, validación por bloques, formato de fecha; `historialProgreso.ts`: validación de rango, formato `dd/MM/yyyy` y geometría del gráfico; `generarPdfHistorial.ts`: descarga del PDF con jsPDF).
 - `Web/src/services/`: acceso a API. `apiClient.ts` (base `VITE_API_URL`, `credentials: 'include'`, `ApiError` con `status` y `errores`) y un servicio por entidad (`clienteService.ts`).
-- Rutas en `Web/src/App.tsx` (`/clientes`, `/clientes/nuevo`, `/clientes/:id/editar`, `/clientes/:id/mediciones/nueva`).
+- Rutas en `Web/src/App.tsx` (`/clientes`, `/clientes/nuevo`, `/clientes/:id/editar`, `/clientes/:id/mediciones/nueva`, `/clientes/:id/historial`).
 - Tipos de DTO exportados desde el servicio de su entidad.
 
 ## 3. Identidad visual y paleta
@@ -103,8 +103,8 @@ Mapa estado → tono centralizado en `BadgeEstado`.
 |---|---|---|---|
 | Crear / acción principal | `btn btn-primary` | Verde profundo `#167546`, texto blanco | Nuevo, Filtrar, Nuevo Producto |
 | Guardar / confirmar | `btn btn-success` | Igual que el primario (verde profundo) | Guardar, afirmativa de `ModalConfirmacion` |
-| Selección / editar | `btn btn-outline-primary` | Outline verde profundo | Editar |
-| Acción destacada o derivada | `btn btn-accent` | Amarillo solar `#F4CC4E`, **texto tinta** | Nueva Medición, Tratamiento, Plan de Nutrición |
+| Selección / editar / consultar | `btn btn-outline-primary` | Outline verde profundo | Editar, Historial |
+| Acción destacada o derivada | `btn btn-accent` | Amarillo solar `#F4CC4E`, **texto tinta** | Nueva Medición, Tratamiento, Plan de Nutrición, Imprimir a PDF |
 | Volver / Cerrar / paginación / negativa | `btn btn-outline-secondary` u `outline-primary` | Outline verde profundo | Volver, Cerrar, Anterior/Siguiente, Omitir |
 | Eliminar | `btn btn-outline-danger` | Outline rojo `-strong`; hover rojo sólido con texto blanco | Papelera de fila |
 
@@ -160,6 +160,13 @@ Escritorio (>= lg)                         Móvil (< lg)
 - Cargando: fila con spinner y "Cargando..." (`role="status"`, derivado de `resultado === null`). Vacío: `.nt-vacio` con icono, título y ayuda distinta según haya o no filtros aplicados. Histórico de mediciones sin datos: "Aún no hay mediciones registradas para este cliente.".
 - Paginación: texto "Página X de Y (N clientes)" + `btn-group` Anterior/Siguiente `btn-outline-primary`, deshabilitados en los extremos.
 
+**Historial de progreso** (`HistorialCliente`, `/clientes/:id/historial`; solo consulta)
+- Encabezado estándar + 4 tarjetas con `section[aria-labelledby]`: **Filtros** (`nt-card--azul`; Fecha Inicial/Final `input type="date"` y `btn-primary` Filtrar en una fila `row g-2`, apilada bajo `sm`; es un `form` con Enter), **Datos Generales** (`nt-card--azul`; Nombre y Fecha del informe `readOnly`), **Historial** (`nt-card--verde`; `row g-3` con `col-lg-6` tabla / `col-lg-6` gráfico, apilados bajo `lg`) y **Acciones** (`nt-card--naranja`; Volver `btn-outline-secondary` + Imprimir a PDF `btn-accent`).
+- Al entrar no se consulta la API: tabla con "Aplique un filtro para ver el historial." y gráfico vacío. Filtrar valida con `validarRango` (error en `alert-danger` dentro de Filtros, sin consultar ni cambiar datos); si es válido: "Cargando..." (`role="status"`, spinner), error de API en `alert-danger` dentro de Historial, vacío "No hay mediciones en el rango seleccionado.", chip con cantidad. Cliente cargando / 404: "Cargando..." y `alert-danger` solo con Volver. Se ignoran respuestas de consultas obsoletas.
+- Tabla: `caption.visually-hidden`, `th scope=col`, `table-responsive`, orden de la API (más reciente primero), números con `formatearNumero`, fechas con `formatearFecha` (`dd/MM/yyyy`, nunca `new Date('yyyy-MM-dd')`).
+- **Gráfico de peso** (`GraficoPeso`, SVG propio): `viewBox` fijo 560x320 con `width:100%; height:auto` (escala en móvil; las etiquetas se reducen proporcionalmente). Geometría de `calcularGeometria` (la misma del PDF). Cuadrícula horizontal en `--nt-border`, ejes y etiquetas en `--nt-text-muted`, polilínea y nodos en `--nt-primary`; todo vía clases `.nt-grafico*` (sin colores en el TSX). Cada nodo es un `circle` con `tabIndex=0`, `<title>` nativo y tooltip SVG ("dd/MM/yyyy: X kg", fondo `--nt-ink`) al `mouseenter`/`focus`, oculto en `mouseleave`/`blur`; foco visible con contorno de 3px. `role="img"` con `aria-label` (cantidad de mediciones, rango de peso y fechas). Vacío: recuadro punteado "Sin datos para mostrar."; un solo punto: nodo sin línea.
+- **Imprimir a PDF**: `btn-accent` que **descarga** un PDF generado con `jspdf` + `jspdf-autotable` (cargados con `import()` dinámico, fuera del bundle inicial); usa las mediciones mostradas y el rango del último filtro válido. Deshabilitado sin datos o mientras genera ("Generando..." con spinner); si falla, `alert-danger` "No se pudo generar el PDF." en la tarjeta Acciones sin perder los datos. Sin estilos `@media print`.
+
 **Mensajes**
 - Error: `div.alert.alert-danger[role="alert"]`; varios errores, un `div` por mensaje.
 - Aviso/éxito: `div.alert.alert-info[role="alert"]` (llega por `location.state.mensaje`).
@@ -184,7 +191,7 @@ Escritorio (>= lg)                         Móvil (< lg)
 **Mensajes de acción**: en pantallas con barra de acciones al pie, los avisos/errores de guardado se muestran dentro de la tarjeta Acciones (junto al botón que los origina).
 
 **Iconos**
-- SVG inline en `Web/src/components/Iconos.tsx` (trazo `currentColor`, 24x24, `aria-hidden="true"` y `focusable="false"`): `IconoUsuarios`, `IconoAjustes`, `IconoMenu`, `IconoMas`, `IconoFlechaIzquierda`, `IconoLupa`, `IconoPapelera`, `IconoEditar`, `IconoActividad`, `IconoBandeja`. Clase `.nt-icono` (1.1em); en botones con texto se separa con margen automático. Sin emoji en la UI. El control que contiene solo un icono debe llevar `aria-label`.
+- SVG inline en `Web/src/components/Iconos.tsx` (trazo `currentColor`, 24x24, `aria-hidden="true"` y `focusable="false"`): `IconoUsuarios`, `IconoAjustes`, `IconoMenu`, `IconoMas`, `IconoFlechaIzquierda`, `IconoLupa`, `IconoPapelera`, `IconoEditar`, `IconoActividad`, `IconoHistorial`, `IconoBandeja`. Clase `.nt-icono` (1.1em); en botones con texto se separa con margen automático. Sin emoji en la UI. El control que contiene solo un icono debe llevar `aria-label`.
 
 ## 6. Checklist de accesibilidad
 
@@ -249,6 +256,7 @@ Escritorio (>= lg)                         Móvil (< lg)
 | 2026-10-16 | Bordes de input/checks `--nt-border-input` `#759286` (3.38:1) distinto del borde suave de tarjetas `--nt-border` | WCAG 1.4.11: el límite de un control necesita 3:1; `#E2ECE5` solo da ~1.2:1 | `index.css` |
 | 2026-10-16 | Foco visible global: contorno 3px verde profundo en enlaces/botones/checks; sidebar contorno blanco | >= 3:1 sobre fondos claros y sobre el sidebar | `index.css` |
 | 2026-10-16 | `alert-info` reasignado a azul cielo claro con texto `#0B5070`; `--bs-form-invalid-color` = `--nt-danger-strong` | Coherencia de marca y contraste AA del texto de error | `index.css` |
+| 2026-10-16 | Pantalla Historial de progreso con tabla + gráfico SVG propio (sin librería de gráficos) y PDF por descarga con `jspdf` + `jspdf-autotable` (import dinámico). **Excepción aprobada** a "sin librerías visuales" solo para el PDF | Descarga directa sin diálogo de impresión y PDF vectorial con tabla paginada; el gráfico en pantalla y en PDF comparten `calcularGeometria`, y un SVG propio evita sumar otra dependencia | HistorialCliente, GraficoPeso, historialProgreso, generarPdfHistorial |
 | 2026-10-16 | Las filas anteriores de §8 que mencionan navy/azul/naranja/mockup quedan como historial; vale lo descrito en §3 y §4 | Evitar contradicciones sin borrar el registro | Documento |
 
 ### Ratios de contraste calculados (WCAG 2.1, 2026-10-16)
@@ -299,6 +307,7 @@ Vigentes tras el rediseño (2026-10-16):
 - `LayoutApp`: sin atrapar foco dentro del offcanvas abierto.
 - `FormularioCliente` aún usa `window.confirm`; migrar a `ModalConfirmacion` (ya existe).
 - `NuevaMedicion`: validar visualmente que el histórico muestra exactamente 10 filas (altura por `--nt-fila-alto` aproximada); sin aviso al cerrar la pestaña con cambios sin guardar; recargar tras guardar y volver a guardar da 409 (diseño actual).
+- `GraficoPeso`: `role="img"` vuelve presentacionales a los nodos para algunos lectores de pantalla (el `<title>` y el foco siguen funcionando); la tipografía del SVG se reduce con el ancho en móvil. Probar con lector de pantalla y en `npm run dev`.
 - Hex de marca tomados de la ficha; confirmar contra manual de marca si existe.
 
 Resuelto (2026-10-16): emoji sustituidos por SVG; placeholders de topbar retirados; estado de carga y vacío en el listado; contraste AA recalculado con la paleta nueva (incluido el sidebar sobre el patrón y los bordes de input).
