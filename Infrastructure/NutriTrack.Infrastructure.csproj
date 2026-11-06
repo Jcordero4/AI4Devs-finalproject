@@ -11,6 +11,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.*" />
+    <!-- Sobrescribe la MySqlConnector 2.3.5 transitiva de Pomelo (GHSA-473q-m89c-ghf8, corregida en 2.6.1). -->
+    <PackageReference Include="MySqlConnector" Version="2.6.2" />
   </ItemGroup>
 
   <PropertyGroup>

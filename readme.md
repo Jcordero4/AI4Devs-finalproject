@@ -6,6 +6,7 @@
    - [1.3 Resumen Ejecutivo](#13-resumen-ejecutivo)
    - [1.4 Stack tecnológico](#14-stack-tecnológico)
    - [1.5 URL del repositorio](#15-url-del-repositorio)
+   - [1.6 Cómo ejecutar el proyecto](#16-cómo-ejecutar-el-proyecto)
 2. [Objetivo y alcance](#2-objetivo-y-alcance)
    - [2.1 Objetivos](#21-objetivos)
    - [2.2 Alcance (MVP)](#22-alcance-mvp)
@@ -15,7 +16,7 @@
    - [4.1 Patrón arquitectónico: capas N-tier](#41-patrón-arquitectónico-capas-n-tier)
    - [4.2 Diagrama C4 — Nivel 1: Contexto](#42-diagrama-c4--nivel-1-contexto)
    - [4.3 Diagrama C4 — Nivel 2: Contenedores](#43-diagrama-c4--nivel-2-contenedores)
-   - [4.4 Diagrama de secuencia — US-001: Inicio de sesión (JWT)](#44-diagrama-de-secuencia--us-001-inicio-de-sesión-jwt)
+   - 4.4 Diagrama de secuencia — US-001: Inicio de sesión (JWT) _(pendiente de documentar; autenticación fuera del MVP)_
    - [4.5 Diagrama de secuencia — US-008: Registrar medición de composición corporal](#45-diagrama-de-secuencia--us-008-registrar-medición-de-composición-corporal)
    - [4.6 Diagrama de secuencia — US-011: Crear y asignar un plan nutricional](#46-diagrama-de-secuencia--us-011-crear-y-asignar-un-plan-nutricional)
    - [4.7 Arquitectura de seguridad (transversal)](#47-arquitectura-de-seguridad-transversal)
@@ -24,6 +25,7 @@
 6. [Historias de Usuario](./docs/backlog-NutriTrack.md)
 7. [Tickets de Trabajo](#7-tickets-de-trabajo)
 8. [Pull Requests](#8-pull-requests)
+9. [Pruebas](#9-pruebas)
 
 ## 1. Ficha del proyecto
 
@@ -48,13 +50,89 @@ La solución se basa en el siguiente conjunto de tecnologías:
 - React 19 + TypeScript + Vite — HTML5 / CSS3 / TypeScript (ES2022) — Interfaz de usuario frontend responsiva (SPA).
 - Bootstrap 5.3.8 (solo CSS) — Estilos y componentes visuales.
 - jsPDF + jspdf-autotable — Generación y descarga del PDF del historial de progreso en el navegador (carga diferida, sin enviar datos a un servidor externo).
+- MySqlConnector 2.6.2 — Driver MySQL, fijado explícitamente en `Infrastructure` para reemplazar la 2.3.5 que trae Pomelo (vulnerabilidad GHSA-473q-m89c-ghf8, corregida en 2.6.1).
+- react-router-dom — Enrutamiento de la SPA. oxlint — Linter del frontend.
 - xUnit — Pruebas unitarias y de integración (.NET).
+- vitest + Testing Library — Pruebas unitarias del frontend. Playwright — Pruebas E2E (ver sección 9).
 
 ### **1.5 URL del repositorio**
 En esta sección encontrará la URL del repositorio del proyecto, no se cargará el main si no el feature branch que corresponda a la etapa a entregar.
 
 Rama entrega 1: https://github.com/Jcordero4/AI4Devs-finalproject/tree/feature/entrega-1-JJCM
 Rama entrega 2: https://github.com/Jcordero4/AI4Devs-finalproject/tree/feature/entrega-2-JJCM
+
+### **1.6 Cómo ejecutar el proyecto**
+
+**Requisitos previos**
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js](https://nodejs.org/) 24 (con npm)
+- MySQL 8 en ejecución (por defecto en `localhost:3306`)
+- Herramienta de migraciones de EF Core: `dotnet tool install --global dotnet-ef`
+
+**1. Clonar y cambiar a la rama de la entrega**
+
+```bash
+git clone https://github.com/Jcordero4/AI4Devs-finalproject.git
+cd AI4Devs-finalproject
+git checkout feature/entrega-2-JJCM
+```
+
+**2. Crear la base de datos y configurar la conexión**
+
+Crear la base vacía en MySQL:
+
+```sql
+CREATE DATABASE nutritrackdb CHARACTER SET utf8mb4;
+```
+
+`API/appsettings.json` solo trae placeholders (`CHANGE_ME`). Crear `API/appsettings.Development.json` (está en `.gitignore`, no se sube al repositorio) con las credenciales reales:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Port=3306;Database=nutritrackdb;User=SU_USUARIO;Password=SU_CLAVE;"
+  }
+}
+```
+
+**3. Aplicar las migraciones** (la API no crea las tablas sola)
+
+```bash
+dotnet ef database update --project Infrastructure --startup-project API
+```
+
+**4. Levantar la API**
+
+```bash
+dotnet dev-certs https --trust      # solo la primera vez: confía el certificado HTTPS de desarrollo
+dotnet run --project API
+```
+
+- API: https://localhost:7054 (también http://localhost:5167)
+- Swagger UI (solo en Development): https://localhost:7054/swagger
+- Health check: https://localhost:7054/health
+
+**5. Levantar el frontend** (en otra terminal)
+
+```bash
+cd Web
+npm install
+npm run dev
+```
+
+Abrir http://localhost:5173. El frontend llama a la API en la URL de `VITE_API_URL` (`Web/.env.development`, por defecto `https://localhost:7054`). La API solo acepta peticiones del origen configurado en `Cors:AllowedOrigins` (por defecto `http://localhost:5173`).
+
+**Problemas frecuentes**
+
+| Síntoma | Causa y solución |
+|---|---|
+| El listado muestra "No se pudo cargar el listado de clientes." | La API no está levantada, el certificado HTTPS no es de confianza (`dotnet dev-certs https --trust`) o faltan las migraciones (paso 3). |
+| `Access denied` o error de conexión al arrancar o migrar | Revisar usuario, clave y puerto en `API/appsettings.Development.json`, y que MySQL esté corriendo. |
+| Error de CORS en la consola del navegador | El frontend se abrió en un puerto distinto de 5173; agregarlo a `Cors:AllowedOrigins`. |
+| `dotnet ef` no se reconoce | Instalar la herramienta: `dotnet tool install --global dotnet-ef`. |
+
+Para ejecutar las pruebas, ver la sección [9. Pruebas](#9-pruebas). El video `Ejemplo Ejecucion/` muestra la aplicación en funcionamiento.
 
 ## 2. Objetivo y alcance.
 
@@ -88,6 +166,17 @@ Rama entrega 2: https://github.com/Jcordero4/AI4Devs-finalproject/tree/feature/e
 - Registro de composición corporal
 - Generacion del reporte de progreso para el cliente en PDF
 - Gestión de Planes nutricionales.
+
+**Estado actual del MVP** (esta lista es el objetivo del producto; no todo está implementado todavía):
+
+| Funcionalidad | Estado |
+|---|---|
+| Gestión de clientes: listar, filtrar, crear, editar (US-004) | Implementado |
+| Registro de composición corporal con tratamiento y plan de nutrición por medición (US-008) | Implementado |
+| Historial de progreso, gráfico de peso y descarga en PDF (US-009) | Implementado |
+| Pruebas unitarias, de integración y E2E | Implementado (ver sección 9) |
+| Autenticación JWT y roles | Fuera del MVP (ver 2.3) |
+| Plan nutricional versionado (US-011 a US-013), correo SMTP, auditoría, Serilog | Planeado; aparece en los diagramas 4.2 a 4.7 como diseño objetivo |
 
 ## 4. Arquitectura del sistema
 
@@ -449,3 +538,37 @@ En este punto se documentan al menos 3 de los PR generados para el proyecto.
 
 Pull Request 1:
 Es la etapa de documentación técnica: Ficha del proyecto, descripción, arquitectura, modelo de datos, historias de usuario, tickets de trabajo.
+
+## 9. Pruebas
+
+El proyecto tiene pruebas unitarias, de integración y E2E. Los comandos se ejecutan desde la raíz del repositorio, salvo los marcados con `Web/`.
+
+| Tipo | Ubicación | Comando |
+|---|---|---|
+| Unitarias API (.NET, xUnit) | `Test/Unit/` | `dotnet test Test --filter "FullyQualifiedName~NutriTrack.Tests.Unit"` |
+| Integración API (`WebApplicationFactory` + EF InMemory) | `Test/Integration/` | `dotnet test Test --filter "FullyQualifiedName~NutriTrack.Tests.Integration"` |
+| Smoke test API | `Test/Integration/ApiSmokeTests.cs` | `dotnet test Test --filter "FullyQualifiedName~ApiSmokeTests"` |
+| Todas las de .NET | `Test/` | `dotnet test NutriTrack.slnx` |
+| Unitarias Web (vitest + Testing Library) | `Web/src/**/*.test.ts(x)` | en `Web/`: `npm test` |
+| E2E Web (Playwright) | `Web/e2e/` | en `Web/`: `npm run test:e2e` |
+
+Filtros por clase: `~ClienteUnitTests`, `~MedicionUnitTests`, `~ClienteApiTests`, `~MedicionApiTests`.
+
+### Ver la ejecución en detalle
+
+- .NET, un renglón por test: agregar `--logger "console;verbosity=detailed"` a cualquier `dotnet test`.
+- Web unitarias, un renglón por test: `npx vitest run --reporter=verbose`. Modo watch (se re-ejecuta al guardar): `npm run test:watch`.
+- E2E con interfaz y línea de tiempo por paso: `npx playwright test --ui` (hacer clic en un test para ver sus pasos).
+- E2E con navegador visible: `npx playwright test --headed --workers=1`. Para ralentizar cada acción: `$env:SLOWMO='800'` (PowerShell) o `SLOWMO=800` (bash) antes del comando.
+- E2E paso a paso: `npx playwright test --debug`.
+- E2E con reporte HTML: `npx playwright test --reporter=html` y luego `npx playwright show-report`.
+
+### Requisitos previos
+
+- Primera vez en `Web/`: `npm install` y `npx playwright install chromium`.
+- Los E2E simulan la API con `page.route`: no necesitan backend ni base de datos. Levantan solos el servidor de Vite en el puerto 5174.
+- Las pruebas de integración usan EF Core InMemory: no necesitan MySQL.
+
+### Integración continua
+
+`.github/workflows/ci.yml` ejecuta en cada PR hacia `main`: build y tests de .NET, y en `Web/` lint, build, tests unitarios y E2E.
