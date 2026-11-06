@@ -17,6 +17,7 @@ NutriTrack: sistema web de gestión de registros nutricionales. Solución: `Nutr
 - Un test: `dotnet test Test --filter "FullyQualifiedName~NombreTest"`
 - API: `dotnet run --project API` (https://localhost:7054, http://localhost:5167); Swagger UI solo en Development: https://localhost:7054/swagger; health check en `/health`
 - Web (en `Web/`): `npm install`, `npm run dev` (:5173), `npm run build`, `npm run lint` (oxlint)
+- Tests Web (en `Web/`): `npm test` (vitest, unitarios), `npm run test:e2e` (Playwright, API simulada; 1ª vez `npx playwright install chromium`). Detalle y variantes de ejecución: `readme.md` §9
 
 ## Arquitectura (N-tier, dependencias en un solo sentido)
 
