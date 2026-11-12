@@ -26,6 +26,7 @@
 7. [Tickets de Trabajo](#7-tickets-de-trabajo)
 8. [Pull Requests](#8-pull-requests)
 9. [Pruebas](#9-pruebas)
+10. [Despliegue](#10-despliegue)
 
 ## 1. Ficha del proyecto
 
@@ -572,3 +573,68 @@ Filtros por clase: `~ClienteUnitTests`, `~MedicionUnitTests`, `~ClienteApiTests`
 ### Integración continua
 
 `.github/workflows/ci.yml` ejecuta en cada PR hacia `main`: build y tests de .NET, y en `Web/` lint, build, tests unitarios y E2E.
+
+## 10. Despliegue
+
+La demo está desplegada en [Render](https://render.com) (API y frontend) con la base de datos en [TiDB Cloud](https://tidbcloud.com) (compatible con MySQL). Render no ofrece MySQL gestionado, por eso la BD es externa.
+
+| Componente | Servicio | Tipo |
+|---|---|---|
+| API (.NET 10) | Render | Web Service (Docker) |
+| Frontend (React + Vite) | Render | Static Site |
+| Base de datos | TiDB Cloud Starter (gratuito) | MySQL compatible |
+
+Archivos involucrados: `Dockerfile` y `.dockerignore` (imagen de la API) y `render.yaml` (Blueprint con ambos servicios).
+
+### 10.1 Base de datos (TiDB Cloud)
+
+1. Crear una cuenta en TiDB Cloud y un recurso **Starter** (plan gratuito), modo **MySQL Compatible**, en AWS. Elegir la misma región que se usará en Render (por ejemplo, N. Virginia / Virginia).
+2. En el **SQL Editor** crear la base de datos:
+   ```sql
+   CREATE DATABASE nutritrackdb;
+   ```
+3. En **Connect** → **General**, generar la contraseña (se muestra una sola vez) y anotar host, puerto (`4000`) y usuario completo (con prefijo, por ejemplo `abc123.root`). El acceso público viene habilitado por defecto.
+4. Armar la cadena de conexión (no versionarla; va solo en Render):
+   ```
+   Server=HOST;Port=4000;Database=nutritrackdb;User=PREFIJO.root;Password=PASSWORD;SslMode=Required;
+   ```
+
+Las tablas se crean solas en el primer arranque de la API (ver variable `Database__MigrarAlIniciar`).
+
+### 10.2 API (Render, Docker)
+
+1. Subir los cambios a GitHub (`Dockerfile`, `.dockerignore`, `render.yaml`). Render despliega desde la rama indicada en el Blueprint.
+2. En Render: **New** → **Blueprint**, conectar el repositorio y elegir la rama. Render lee `render.yaml`.
+3. Cargar las variables del servicio `nutritrack-api`:
+
+   | Variable | Valor |
+   |---|---|
+   | `ConnectionStrings__DefaultConnection` | Cadena de conexión de TiDB (paso 10.1) |
+   | `Cors__AllowedOrigins__0` | URL del frontend, sin barra final |
+   | `Database__MigrarAlIniciar` | `true` (aplica las migraciones de EF al iniciar) |
+   | `ASPNETCORE_ENVIRONMENT` | `Production` |
+
+4. **Deploy Blueprint** y esperar el build. Verificar `https://<servicio>.onrender.com/health` (debe responder 200).
+
+Detalles de la API para Render: escucha en el puerto de la variable `PORT`, respeta los headers `X-Forwarded-*` (Render termina el TLS) y la redirección a HTTPS solo se activa en Development. Swagger solo está disponible en Development.
+
+### 10.3 Frontend (Render, Static Site)
+
+El servicio `nutritrack-web` ya está definido en `render.yaml`: compila `Web/` con `npm ci && npm run build` y publica `dist`. Lleva:
+
+- `VITE_API_URL` apuntando a la URL pública de la API.
+- Un rewrite `/* → /index.html`, necesario para las rutas de react-router.
+
+Pasos:
+
+1. Hacer **Manual sync** del Blueprint (o esperar el auto-sync) para crear el Static Site.
+2. Copiar la URL que Render asigna al frontend.
+3. En el servicio `nutritrack-api` → **Environment**, poner esa URL en `Cors__AllowedOrigins__0` y guardar. Sin este paso el navegador bloquea las llamadas por CORS.
+
+### 10.4 Notas
+
+> **Nota:** esto es una demo en el plan gratuito de Render. La API se duerme tras 15 minutos sin tráfico, por lo que la primera petición tras un período de inactividad puede tardar unos 50 segundos mientras despierta. Hay que darle ese tiempo antes de asumir que falla. El frontend (Static Site) no se duerme.
+
+### 10.5 Proyecto desplegado
+
+Para ver el proyecto desplegado puedes ingresar en: https://nutritrack-web-e5kf.onrender.com/clientes
