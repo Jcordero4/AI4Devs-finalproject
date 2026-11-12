@@ -1,0 +1,18 @@
+# Blueprint de Render para la API. MySQL no existe como servicio gestionado en Render:
+# usar un MySQL externo (Aiven, TiDB Cloud, etc.) y pegar la cadena en ConnectionStrings__DefaultConnection.
+services:
+  - type: web
+    name: nutritrack-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # se carga a mano en el dashboard (secreto)
+      - key: Cors__AllowedOrigins__0
+        sync: false # URL del frontend, ej. https://nutritrack.onrender.com
+      - key: Database__MigrarAlIniciar
+        value: "true"

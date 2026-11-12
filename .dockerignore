@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+.git/
+.github/
+.claude/
+Web/
+Test/
+docs/
+openspec/
+Evidencia de funcionamiento/
+**/appsettings.Development.json
+*.md

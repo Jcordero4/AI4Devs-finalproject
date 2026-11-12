@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using NutriTrack.Application;
 using NutriTrack.Infrastructure;
+using NutriTrack.Infrastructure.Persistence;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +28,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Render termina TLS en su proxy: respetar X-Forwarded-* y no redirigir a HTTPS dentro del contenedor.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    KnownNetworks = { },
+    KnownProxies = { }
+});
+
+if (app.Configuration.GetValue<bool>("Database:MigrarAlIniciar"))
+{
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<NutriTrackDbContext>().Database.Migrate();
+}
+
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors();
 app.UseMiddleware<NutriTrack.API.Middleware.ManejoErroresMiddleware>();
 app.MapHealthChecks("/health");
